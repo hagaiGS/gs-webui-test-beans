@@ -2,5 +2,6 @@
 /target
 /beans/beans.iml
 /beans/target
+beans/test/resources/selenium-drivers
 /*.iml
 /chromedriver.log
