@@ -15,6 +15,7 @@ import webui.tests.pages.*;
  * Date: 6/25/13
  * Time: 12:26 PM
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:example-context.xml"})
 public class RecipesRepositoryTest {
