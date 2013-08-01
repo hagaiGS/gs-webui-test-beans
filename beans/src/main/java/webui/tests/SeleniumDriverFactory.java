@@ -33,9 +33,9 @@ public class SeleniumDriverFactory{
 
     private String chromeDriverPath = DefaultValues.get().getChromeDriverPath();
 
-    private String gwtFirefoxDevXpi = "classpath:selenium-drivers/gwt-dev-plugin-1-22.xpi";
+    private String gwtFirefoxDevXpi = "file:src/test/resources/selenium-drivers/gwt-dev-plugin-1-22.xpi";
 
-    private String gwtChromeDevCrx = "classpath:selenium-drivers/chrome_gwt_1_0_11357.crx";
+    private String gwtChromeDevCrx = "file:src/test/resources/selenium-drivers/chrome_gwt_1_0_11357.crx";
 
     public static enum DriverType {
         CHROME, FIREFOX, IE, FIREFOX_GWT_DEV, CHROME_GWT_DEV, SAFARI, HTMLUNIT;
@@ -62,7 +62,7 @@ public class SeleniumDriverFactory{
     }
 
     public void initializeDriver() {
-
+         logger.info("this is my location [{}]",new File(".").getAbsolutePath());
         switch ( driverType )
         {
             case SAFARI :
@@ -263,16 +263,21 @@ public class SeleniumDriverFactory{
             return res;
         }
 
+        // TODO : create multiple options and try all.
+        // this is due to a maven bug! when running tests from command line, the resources are copied and loose their permissions.
+        // since chrome files should be executable, this is a problem for us.
+        // In IDEs, we need to use classpath, however in command line we can use "file:".
+        // You can tell the IDE to use a different work folder as a work around.
         public static class Windows extends DefaultValues{
             @Override
             public String getChromeDriverPath() {
-                return "classpath:selenium-drivers/chromedriver_win_26.0.1383.0/chromedriver.exe";
+                return "file:src/test/resources/selenium-drivers/chromedriver_win_26.0.1383.0/chromedriver.exe";
             }
         }
         public static class Linux extends DefaultValues{
             @Override
             public String getChromeDriverPath() {
-                return "classpath:selenium-drivers/chromedriver_linux64_2.1/chromedriver";
+                return "file:src/test/resources/selenium-drivers/chromedriver_linux64_2.1/chromedriver";
             }
         }
     }
