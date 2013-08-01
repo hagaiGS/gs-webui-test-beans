@@ -26,6 +26,5 @@ How to use this project
    make sure the files are available under `src/test/resources/selenium-drivers`  
    This path is configurable. 
 
-5. Start writing your test. You can use Spring to define your beans.
-
+5. Start writing your test. You can use Spring to define your beans.  
    Here is an example without a Spring context
