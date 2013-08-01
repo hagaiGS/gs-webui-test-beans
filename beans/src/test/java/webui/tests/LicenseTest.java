@@ -16,6 +16,7 @@ import webui.tests.pages.LoginPage;
  * Date: 3/6/13
  * Time: 11:08 PM
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:example-context.xml"})
 public class LicenseTest {

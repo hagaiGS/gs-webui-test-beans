@@ -3,6 +3,7 @@ package webui.tests;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import java.util.List;
  * Date: 6/25/13
  * Time: 12:26 PM
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:example-context.xml"})
 public class ApplicationsUninstallTest {
