@@ -33,9 +33,9 @@ public class SeleniumDriverFactory{
 
     private String chromeDriverPath = DefaultValues.get().getChromeDriverPath();
 
-    private String gwtFirefoxDevXpi = "classpath:webui/gwt-dev-plugin-1-22.xpi";
+    private String gwtFirefoxDevXpi = "classpath:selenium-drivers/gwt-dev-plugin-1-22.xpi";
 
-    private String gwtChromeDevCrx = "classpath:webui/chrome_gwt_1_0_11357.crx";
+    private String gwtChromeDevCrx = "classpath:selenium-drivers/chrome_gwt_1_0_11357.crx";
 
     public static enum DriverType {
         CHROME, FIREFOX, IE, FIREFOX_GWT_DEV, CHROME_GWT_DEV, SAFARI, HTMLUNIT;
@@ -266,13 +266,13 @@ public class SeleniumDriverFactory{
         public static class Windows extends DefaultValues{
             @Override
             public String getChromeDriverPath() {
-                return "classpath:webui/chromedriver_win_26.0.1383.0/chromedriver.exe";
+                return "classpath:selenium-drivers/chromedriver_win_26.0.1383.0/chromedriver.exe";
             }
         }
         public static class Linux extends DefaultValues{
             @Override
             public String getChromeDriverPath() {
-                return "classpath:webui/chromedriver_linux_x64_v27-29";
+                return "classpath:selenium-drivers/chromedriver_linux64_2.1/chromedriver";
             }
         }
     }
