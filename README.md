@@ -22,4 +22,6 @@ How to use this project
 
         git submodule add https://github.com/guy-mograbi-at-gigaspaces/selenium-drivers.git src/test/resources/selenium-drivers
 
-4. Start writing your test. You can use Spring to define your beans, but you can also write in code.
+4. Start writing your test. You can use Spring to define your beans.
+
+   Here is an example without a Spring context
