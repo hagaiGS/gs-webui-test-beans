@@ -2,10 +2,12 @@ How to use this project
 
 
 1. Add a maven dependency to your pom
-
-        <groupId>webui.tests</groupId>
-        <artifactId>beans</artifactId>
-        <version>9.5.0-SNAPSHOT</version>
+        
+        <dependency>
+            <groupId>webui.tests</groupId>
+            <artifactId>beans</artifactId>
+            <version>9.5.0-SNAPSHOT</version>
+        </dependency>
 
 
 2. Add the following maven repository to your pom
