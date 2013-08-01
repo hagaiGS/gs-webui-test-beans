@@ -11,9 +11,9 @@ How to use this project
 2. Add the following maven repository to your pom
 
 
-<repository>
+        <repository>
             <id>openspaces</id>
-                <url>http://maven-repository.openspaces.org</url>
+            <url>http://maven-repository.openspaces.org</url>
         </repository>
 
 3. Add a submodule to your git project (or simply make the files available)
