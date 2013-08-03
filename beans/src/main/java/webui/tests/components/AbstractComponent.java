@@ -90,22 +90,88 @@ public class AbstractComponent<T extends AbstractComponent> implements GsSeleniu
         return load( webElement == null ? webDriver : webElement );
     }
 
+    public abstract static class SizeCondition{
 
-    public ExpectedCondition<WebElement> waitFor( final WebElement element ) {
-        return new ExpectedCondition<WebElement>() {
-            public WebElement apply( WebDriver driver ) {
-                try
-                {
-                    return element.isDisplayed() ? element : null;
-                } catch ( StaleElementReferenceException e )
-                {
-                    return null;
+        int root;
+
+        public static SizeCondition eq(int size){
+            return new EQ().setRoot(size);
+        }
+
+        public static SizeCondition gt( int size ){
+            return new GT().setRoot( size );
+        }
+
+        public static SizeCondition gte( int size ){
+            return new GTE().setRoot( size );
+        }
+
+        public static SizeCondition lt( int size ){
+            return new LT().setRoot( size );
+        }
+
+        public static SizeCondition lte ( int size ){
+            return new LTE().setRoot( size );
+        }
+
+        public SizeCondition setRoot( int root ){
+            this.root = root;
+            return this;
+        }
+
+        public abstract boolean applies( int n );
+
+        public static class EQ extends SizeCondition{
+            @Override
+            public boolean applies(int n) {
+                return root == n;
+            }
+        }
+
+        public static class GT extends SizeCondition{
+            @Override
+            public boolean applies(int n) {
+                return n > root;
+            }
+        }
+
+        public static class GTE extends SizeCondition{
+            @Override
+            public boolean applies(int n) {
+                return n >= root;
+            }
+        }
+
+        public static class LT extends SizeCondition{
+            @Override
+            public boolean applies(int n) {
+                return n < root;
+            }
+        }
+
+        public static class LTE extends SizeCondition{
+            @Override
+            public boolean applies(int n) {
+                return n <= root;
+            }
+        }
+    }
+
+    public ExpectedCondition<List<WebElement>> waitForSizeCondition( final List<WebElement> elements, final SizeCondition cond ){
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(WebDriver webDriver) {
+                try{
+                    return cond.applies( elements.size() ) ? elements : null;
+                }catch(Exception e){
+                    logger.error("unable to determine collection condition");
                 }
+                return null;
             }
         };
     }
 
-    public ExpectedCondition<WebElement> waitFor( final List<WebElement> elements ) {
+    public ExpectedCondition<WebElement> waitForCondition( final List<WebElement> elements ) {
         return new ExpectedCondition<WebElement>() {
             @Override
             public WebElement apply( WebDriver webDriver ) {
@@ -135,7 +201,7 @@ public class AbstractComponent<T extends AbstractComponent> implements GsSeleniu
         }
         if ( List.class.isAssignableFrom( wd.getClass() ) )
         {
-            return waitFor( ( List<WebElement> ) wd );
+            return waitForCondition((List<WebElement>) wd);
         }
         return null;
     }
@@ -208,6 +274,10 @@ public class AbstractComponent<T extends AbstractComponent> implements GsSeleniu
 
     protected void waitFor( final WebElement... webElements ) {
         waitFor( DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS, webElements );
+    }
+
+    protected void waitForCollectionSize( final List<WebElement> webElements, SizeCondition cond ){
+        waitForElement( DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS, waitForSizeCondition( webElements, cond ));
     }
 
     /**
