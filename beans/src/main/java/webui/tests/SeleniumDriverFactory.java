@@ -53,8 +53,9 @@ public class SeleniumDriverFactory{
 
     private ChromeDriverService chromeService = null;
 
-    public void setDriverType( DriverType driverType ) {
+    public SeleniumDriverFactory setDriverType( DriverType driverType ) {
         this.driverType = driverType;
+        return this;
     }
 
     public void setDriverTypeString( String str ) {
@@ -153,7 +154,7 @@ public class SeleniumDriverFactory{
         }
     }
 
-    public void init() {
+    public SeleniumDriverFactory init() {
         retries = 3;
         for ( int i = 0; i < retries; i++ )
         {
@@ -179,6 +180,7 @@ public class SeleniumDriverFactory{
         }
 
         selenium = new WebDriverBackedSelenium( webDriver, rootUrl );
+        return this;
     }
 
     public WebDriver getDriver() {

@@ -54,7 +54,6 @@ public class ComboBox extends AbstractComponent<ComboBox> {
         // expand the list, there's no way to find the elements without them being visible
         webElement.findElement(By.cssSelector(".icon")).click();
         List<WebElement> items = webElement.findElements(By.cssSelector(".list-wrapper ul li"));
-        waitFor(items);
         return items;
     }
 
