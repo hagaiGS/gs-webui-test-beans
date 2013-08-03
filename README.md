@@ -145,16 +145,16 @@ How to use this project
 
     ###    GsPage class
 
-    Most of the magic in this code is available due to the GsPage<T> class the pages inherit from.
-    The GsPage class has a lot of useful functions like "wait" and "load".
+    Most of the magic in this code is available due to the `GsPage<T>` class the pages inherit from.
+    The `GsPage` class has a lot of useful functions like `wait` and `load`.
 
     ###    @FirstDisplayed
 
-    Another useful function of this library is the "@FirstDisplayed" annotation.
+    Another useful function of this library is the `@FirstDisplayed` annotation.
     In this test we used it for the submit WebElement.
     Google's search page is different if you view it in English, other language or if you have instant search activated.
 
-    The @FirstDisplayed annotation allows you to use @FindBy with multiple selectors and it will return
+    The `@FirstDisplayed` annotation allows you to use `@FindBy` with multiple matches and it will return
     the first displayed WebElement that matches the selector.
 
     Using this method, you can build a page that will handle different versions of your website.
