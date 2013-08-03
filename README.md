@@ -73,70 +73,71 @@ How to use this project
 
 7. This example uses a page.
 
-    @Component
-    public class GoogleSearch extends GsPage<GoogleSearch> {
+        @Component
+        public class GoogleSearch extends GsPage<GoogleSearch> {
 
-        @OnLoad
-        @FindBy(css="[name=q]")
-        WebElement searchInput;
+            @OnLoad
+            @FindBy(css="[name=q]")
+            WebElement searchInput;
 
-        @OnLoad
-        @FindBy(css="button[aria-label='Google Search'], input[type='submit'],table>tbody>tr>td>table>tbody>tr>td>div>div>span>span>input")
-        @FirstDisplayed
-        WebElement searchButton;
+            @OnLoad
+            @FindBy(css="button[aria-label='Google Search'], input[type='submit'],table>tbody>tr>td>table>tbody>tr>td>div>div>span>span>input")
+            @FirstDisplayed
+            WebElement searchButton;
 
-        public void search( String term ){
-            searchInput.sendKeys(term);
-            searchButton.click();
-        }
+            public void search( String term ){
+                searchInput.sendKeys(term);
+                searchButton.click();
+            }
 
-        public GoogleSearch goTo() {
-            webDriver.get("http://www.google.com");
-            return load();
-        }
-    }
-
-
-    @Component
-    public class GoogleSearchResults extends GsPage<GoogleSearchResults> {
-
-        private static Logger logger = LoggerFactory.getLogger(GoogleSearchResults.class);
-
-        @FindBy( css = "h3.r a")
-        List<WebElement> searchResults;
-
-        public void printResults(){
-            waitForCollectionSize(searchResults, SizeCondition.gt( 0 ));
-            logger.info("I have [{}] results", searchResults.size());
-            for (WebElement searchResult : searchResults) {
-                logger.info(searchResult.getText());
+            public GoogleSearch goTo() {
+                webDriver.get("http://www.google.com");
+                return load();
             }
         }
 
-    }
 
-    @ContextConfiguration
-    @RunWith(SpringJUnit4ClassRunner.class)
-    public class MyTest {
+        @Component
+        public class GoogleSearchResults extends GsPage<GoogleSearchResults> {
 
-        private static Logger logger = LoggerFactory.getLogger(MyTest.class);
+            private static Logger logger = LoggerFactory.getLogger(GoogleSearchResults.class);
 
-        @Autowired
-        public GoogleSearch searchPage;
+            @FindBy( css = "h3.r a")
+            List<WebElement> searchResults;
 
-        @Autowired
-        public GoogleSearchResults results;
+            public void printResults(){
+                waitForCollectionSize(searchResults, SizeCondition.gt( 0 ));
+                logger.info("I have [{}] results", searchResults.size());
+                for (WebElement searchResult : searchResults) {
+                    logger.info(searchResult.getText());
+                }
+            }
 
-
-
-        @Test
-        public void exampleTest(){
-            logger.info("starting test");
-            searchPage.goTo().search("gs-webui-test-beans github");
-            logger.info("printing results");
-            results.load().printResults();
         }
-    }
+
+
+        @ContextConfiguration
+        @RunWith(SpringJUnit4ClassRunner.class)
+        public class MyTest {
+
+            private static Logger logger = LoggerFactory.getLogger(MyTest.class);
+
+            @Autowired
+            public GoogleSearch searchPage;
+
+            @Autowired
+            public GoogleSearchResults results;
+
+
+
+            @Test
+            public void exampleTest(){
+                logger.info("starting test");
+                searchPage.goTo().search("gs-webui-test-beans github");
+                logger.info("printing results");
+                results.load().printResults();
+            }
+        }
 
     The above example has 2 pages - one for search and another for results.
     The test searches for "gs-webui-tet-beans github" in google, and lists the results.
