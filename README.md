@@ -1,4 +1,5 @@
 How to use this project
+=======================
 
 
 1. Add a maven dependency to your pom
@@ -142,12 +143,12 @@ How to use this project
     The above example has 2 pages - one for search and another for results.
     The test searches for "gs-webui-tet-beans github" in google, and lists the results.
 
-    GsPage class
+###    GsPage class
 
     Most of the magic in this code is available due to the GsPage<T> class the pages inherit from.
     The GsPage class has a lot of useful functions like "wait" and "load".
 
-    @FirstDisplayed
+###    @FirstDisplayed
 
     Another useful function of this library is the "@FirstDisplayed" annotation.
     In this test we used it for the submit WebElement.
