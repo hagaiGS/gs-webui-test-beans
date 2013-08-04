@@ -2,22 +2,26 @@ How to use this project
 =======================
 
 
+
 1. Add a maven dependency to your pom
-        
-        <dependency>
-            <groupId>webui.tests</groupId>
-            <artifactId>beans</artifactId>
-            <version>9.5.0-SNAPSHOT</version>
-        </dependency>
+
+    ```xml        
+    <dependency>
+        <groupId>webui.tests</groupId>
+        <artifactId>beans</artifactId>
+        <version>9.5.0-SNAPSHOT</version>
+    </dependency>
+    ```
 
 
 2. Add the following maven repository to your pom
 
-
-        <repository>
-            <id>openspaces</id>
-            <url>http://maven-repository.openspaces.org</url>
-        </repository>
+    ```xml
+    <repository>
+        <id>openspaces</id>
+        <url>http://maven-repository.openspaces.org</url>
+    </repository>
+    ```
 
 3. Add a submodule to your git project (or simply make the files available)
 
@@ -30,44 +34,46 @@ How to use this project
 5. Start writing your test. You can use Spring to define your beans.  
    Here is an example without a Spring context
 
-        public class MyTest {
+   ```java
+   public class MyTest {
 
-            private static Logger logger = LoggerFactory.getLogger(MyTest.class);
-            SeleniumDriverFactory factory = new SeleniumDriverFactory();
+        private static Logger logger = LoggerFactory.getLogger(MyTest.class);
+        SeleniumDriverFactory factory = new SeleniumDriverFactory();
 
-            @After
-            public void after(){
-                logger.info("closing web driver");
-               factory.quit();
-            }
-
-            @Test
-            public void exampleTest(){
-                logger.info("starting test");
-                WebDriver driver = factory.init().getDriver();
-                driver.get("http://www.google.com");
-
-            }
+        @After
+        public void after(){
+           logger.info("closing web driver");
+           factory.quit();
         }
+
+        @Test
+        public void exampleTest(){
+            logger.info("starting test");
+            WebDriver driver = factory.init().getDriver();
+            driver.get("http://www.google.com");
+        }
+    }
+    ```
 
 
 6. But this is not cool enough.. To get the full power of our system, lets use Spring.
 
-        @ContextConfiguration
-        @RunWith(SpringJUnit4ClassRunner.class)
-        public class MyTest {
-
-            private static Logger logger = LoggerFactory.getLogger(MyTest.class);
-
-            @Autowired
-            public WebDriver webDriver;
-
-            @Test
-            public void exampleTest(){
-                logger.info("starting test");
-                webDriver.get("http://www.google.com");
-            }
+    ```java
+    
+    @ContextConfiguration
+    @RunWith(SpringJUnit4ClassRunner.class)
+    public class MyTest {
+        private static Logger logger = LoggerFactory.getLogger(MyTest.class);
+        @Autowired
+        public WebDriver webDriver;
+        @Test
+        public void exampleTest(){
+            logger.info("starting test");
+            webDriver.get("http://www.google.com");
         }
+    }
+    
+    ```
 
   Which is shorter, and nicer, but still - not REALLY COOL.. So lets get even cooler.
   Selenium works best when using the [Page model](https://code.google.com/p/selenium/wiki/PageObjects).
