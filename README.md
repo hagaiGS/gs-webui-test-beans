@@ -1,8 +1,5 @@
 # How to use this project
 
-I am **bold**<link href="style.css" rel="stylesheet"></link>
-
-
 #### Add a maven dependency to your pom
 
 
