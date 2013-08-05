@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import webui.tests.annotations.OnLoad;
-import webui.tests.components.FirstDisplayed;
+import webui.tests.annotations.FirstDisplayed;
 import webui.tests.components.LoginForm;
 
 import java.util.List;

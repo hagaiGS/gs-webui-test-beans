@@ -3,6 +3,7 @@ package webui.tests.components;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.stereotype.Component;
+import webui.tests.annotations.FirstDisplayed;
 import webui.tests.annotations.OnLoad;
 
 import java.util.List;

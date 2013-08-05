@@ -4,6 +4,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import webui.tests.annotations.Absolute;
+import webui.tests.annotations.FirstDisplayed;
 
 import java.util.ArrayList;
 import java.util.List;

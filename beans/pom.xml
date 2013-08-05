@@ -103,6 +103,7 @@
                     </dependency>
                   </dependencies>
                   <configuration>
+                      <argLine>-Dspring.profiles.active=${spring.profile}</argLine>
                       <properties>
                           <property>
                               <name>listener</name>
@@ -123,6 +124,12 @@
 
 
     <profiles>
+        <profile>
+            <id>localhost</id>
+            <properties>
+                <spring.profile>localhost</spring.profile>
+            </properties>
+        </profile>
         <profile>
             <id>default</id>
             <activation>

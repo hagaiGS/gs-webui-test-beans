@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
+import webui.tests.annotations.FirstDisplayed;
 import webui.tests.annotations.OnLoad;
 import webui.tests.components.*;
 
