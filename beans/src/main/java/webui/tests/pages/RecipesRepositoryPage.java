@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import webui.tests.components.AbstractComponent;
-import webui.tests.components.FirstDisplayed;
+import webui.tests.annotations.FirstDisplayed;
 import webui.tests.components.RecipesInnerTabs;
 
 /**

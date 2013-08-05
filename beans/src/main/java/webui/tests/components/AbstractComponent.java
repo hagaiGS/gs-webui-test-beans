@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Time: 3:24 PM
  */
 @Component
-public class AbstractComponent<T extends AbstractComponent> implements GsSeleniumComponent {
+public abstract class  AbstractComponent<T extends AbstractComponent> implements GsSeleniumComponent {
 
     @Autowired(required = true)
     protected WebDriver webDriver;

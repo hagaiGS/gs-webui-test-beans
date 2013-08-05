@@ -12,8 +12,8 @@ import org.openqa.selenium.support.pagefactory.FieldDecorator;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import webui.tests.components.Absolute;
-import webui.tests.components.FirstDisplayed;
+import webui.tests.annotations.Absolute;
+import webui.tests.annotations.FirstDisplayed;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
