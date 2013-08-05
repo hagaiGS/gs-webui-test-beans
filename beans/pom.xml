@@ -162,6 +162,7 @@
     </profiles>
 
     <properties>
+            <spring.profile></spring.profile>
             <selenium.version>2.30.0</selenium.version><!-- default to DEV environment.. let the automation script do the hard work -->
     </properties>
 </project>
