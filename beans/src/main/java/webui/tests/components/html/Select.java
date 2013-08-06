@@ -3,7 +3,7 @@ package webui.tests.components.html;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import webui.tests.components.AbstractComponent;
+import webui.tests.components.abstracts.AbstractComponent;
 
 import java.util.List;
 

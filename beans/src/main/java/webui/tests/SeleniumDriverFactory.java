@@ -266,7 +266,7 @@ public class SeleniumDriverFactory{
         }
 
         // TODO : create multiple options and try all.
-        // this is due to a maven bug! when running tests from command line, the resources are copied and loose their permissions.
+        // this is due to a maven bug! when running webui.tests from command line, the resources are copied and loose their permissions.
         // since chrome files should be executable, this is a problem for us.
         // In IDEs, we need to use classpath, however in command line we can use "file:".
         // You can tell the IDE to use a different work folder as a work around.

@@ -5,7 +5,7 @@ import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import webui.tests.pages.GsPage;
+import webui.tests.components.abstracts.GsPage;
 
 import java.util.List;
 
