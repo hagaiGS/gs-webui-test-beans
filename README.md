@@ -5,7 +5,7 @@
 
 ```xml        
 <dependency>
-    <groupId>webui.tests</groupId>
+    <groupId>webui.webui.tests</groupId>
     <artifactId>beans</artifactId>
     <version>9.5.0-SNAPSHOT</version>
 </dependency>
@@ -30,7 +30,7 @@ make sure the files are available under `src/test/resources/selenium-drivers`
 This path is configurable. 
 
 #### Test example without Spring 
-We recommend using Spring to run your tests.  
+We recommend using Spring to run your webui.tests.
 We will show below how neat things are with Spring.  
 Here is an example without a Spring context
 
@@ -183,7 +183,7 @@ The `@FirstDisplayed` annotation allows you to use `@FindBy` with multiple match
 the first displayed WebElement that matches the selector.
 
 Using this method, you can build a page that will handle different versions of your website  
-thus making your tests more stable. 
+thus making your webui.tests more stable.
 
 
 

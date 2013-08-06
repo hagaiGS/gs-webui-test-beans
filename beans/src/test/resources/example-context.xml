@@ -24,17 +24,17 @@
     <bean id="webDriver" class="org.openqa.selenium.WebDriver" factory-bean="driverFactory" factory-method="getDriver"/>
     <bean id="selenium" class="com.thoughtworks.selenium.Selenium" factory-bean="driverFactory" factory-method="getSelenium"/>
 
-    <bean id="licenseTestConf" class="webui.tests.LicenseTest$LicenseTestConf">
-        <property name="aboutText" value="cloudify"/>
-        <property name="username" value="guy"/>
-        <property name="password" value="guy"/>
-    </bean>
+    <!--<bean id="licenseTestConf" class="webui.webui.tests.LicenseTest$LicenseTestConf">-->
+        <!--<property name="aboutText" value="cloudify"/>-->
+        <!--<property name="username" value="guy"/>-->
+        <!--<property name="password" value="guy"/>-->
+    <!--</bean>-->
 
-    <bean id="recipesRepositoryTestConf" class="webui.tests.RecipesRepositoryTest$RecipesRepositoryTestConf">
-        <property name="progressConsoleText" value="Starting Non-Interactive Shell" />
-        <property name="progressDialogText" value="Installation started" />
-    </bean>
-
+    <!--<bean id="recipesRepositoryTestConf" class="webui.webui.tests.RecipesRepositoryTest$RecipesRepositoryTestConf">-->
+        <!--<property name="progressConsoleText" value="Starting Non-Interactive Shell" />-->
+        <!--<property name="progressDialogText" value="Installation started" />-->
+    <!--</bean>-->
+<!---->
     <context:component-scan base-package="webui.tests"/>
     <context:annotation-config/>
 </beans>

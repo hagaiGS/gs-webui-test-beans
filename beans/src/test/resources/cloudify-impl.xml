@@ -5,16 +5,16 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean id="cloudifyBean" class="webui.tests.CloudifyTestBeanImpl"/>
-    <bean id="cloudifyCliManager" class="webui.tests.cloudify.commands.CloudifyCliManager"/>
-
-
-
-    <bean id="bootstrapFlags" class="webui.tests.cloudify.commands.Bootstrap$Details"></bean>
-
-    <bean id="connectDetails" class="webui.tests.cloudify.commands.Connect$Details"/>
-    <bean id="teardownDetails" class="webui.tests.cloudify.commands.Teardown$Details"/>
-    <bean id="cloudDetails" class="webui.tests.CloudDetails"/>
+    <!--<bean id="cloudifyBean" class="org.cloudifysource.setup.manager.CloudifyTestBeanImpl"/>-->
+    <!--<bean id="cloudifyCliManager" class="webui.tests.cloudify.commands.CloudifyCliManager"/>-->
+<!---->
+<!---->
+<!---->
+    <!--<bean id="bootstrapFlags" class="webui.tests.cloudify.commands.Bootstrap$Details"></bean>-->
+<!---->
+    <!--<bean id="connectDetails" class="webui.tests.cloudify.commands.Connect$Details"/>-->
+    <!--<bean id="teardownDetails" class="webui.tests.cloudify.commands.Teardown$Details"/>-->
+    <!--<bean id="cloudDetails" class="org.cloudifysource.setup.manager.CloudDetails"/>-->
 
     <context:component-scan base-package="webui.tests"/>
     <context:annotation-config/>
