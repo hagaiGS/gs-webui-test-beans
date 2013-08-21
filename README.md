@@ -5,9 +5,9 @@
 
 ```xml        
 <dependency>
-    <groupId>webui.webui.tests</groupId>
+    <groupId>webui.tests</groupId>
     <artifactId>beans</artifactId>
-    <version>9.5.0-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
 </dependency>
 ```
 
