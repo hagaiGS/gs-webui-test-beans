@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
+import webui.tests.SeleniumSwitchManager;
+import webui.tests.annotations.NoEnhancement;
 import webui.tests.annotations.OnLoad;
 import webui.tests.selenium.GsFieldDecorator;
 import webui.tests.selenium.GsSeleniumComponent;
@@ -32,6 +34,9 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
     @Autowired(required = true)
     protected WebDriver webDriver;
 
+    @Autowired( required = true )
+    protected SeleniumSwitchManager switchManager;
+
     protected WebElement webElement;
 
     private static Logger logger = LoggerFactory.getLogger( AbstractComponent.class );
@@ -44,18 +49,41 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
     private static final long SLEEP_DELTA_MILLIS = 100;
 
 
+    @NoEnhancement
     @Override
-    public void setWebElement( WebElement webElement ) {
+    public T setWebElement( WebElement webElement ) {
         this.webElement = webElement;
+        return (T) this;
     }
 
+    public T switchTo(){
+        switchManager.enter( webElement );
+        return (T) this;
+    }
+
+    public T switchFrom(){
+        switchManager.leave( webElement );
+        return (T) this;
+    }
+
+    @NoEnhancement
     @Override
-    public void setWebDriver( WebDriver webDriver ) {
+    public T setSwitchManager(SeleniumSwitchManager switchManager) {
+        this.switchManager = switchManager;
+        return (T) this;
+    }
+
+
+
+    @NoEnhancement
+    @Override
+    public T setWebDriver( WebDriver webDriver ) {
         this.webDriver = webDriver;
+        return (T) this;
     }
 
     public T load ( SearchContext searchContext ){
-        PageFactory.initElements( new GsFieldDecorator( searchContext, webDriver  ), this );
+        PageFactory.initElements( new GsFieldDecorator( searchContext, webDriver, switchManager  ), this );
 
         final Object me = this;
         // load components - we only load components that have "FindBy"
@@ -66,11 +94,25 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
             @Override
             public void doWith( Field field ) throws IllegalArgumentException, IllegalAccessException {
                 field.setAccessible( true );
-                logger.debug("loading field :  " + field.getName());
+                StringBuilder sb = new StringBuilder();
+
+                sb.append( me.getClass().getName() ).append("#").append(field.getName()).append(" [by = ");
+
+                if ( field.isAnnotationPresent( FindBy.class )){
+                    sb.append( field.getAnnotation( FindBy.class).toString() );
+                }else{
+                    sb.append("N/A");
+                }
+
+                sb.append("]");
+
+
+                logger.debug("loading field :  " + sb.toString() );
+
                 try{
-                ((AbstractComponent)ReflectionUtils.getField( field, me )).load();
+                 ((AbstractComponent)ReflectionUtils.getField( field, me )).load();
                 }catch(RuntimeException e){
-                    String msg = String.format("problems loading field [%s]", me.getClass().getName() + "#" + field.getName() );
+                    String msg = String.format("problems loading field [%s]", sb.toString()  );
                     logger.info( msg, e );
                     throw new RuntimeException(msg, e);
                 }
@@ -219,22 +261,36 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
      * @param unit    - unit of timeout.
      * @return - returns the web element.
      */
-    protected void waitForElement( long timeout, TimeUnit unit, com.google.common.base.Function predicate ) {
+    protected <V> V waitForElement( long timeout, TimeUnit unit, ExpectedCondition<V> predicate ) {
+        try{
+        return waitForPredicate( timeout, unit, predicate );
+        }catch(Exception e){
+            throw new ElementNotVisibleException( String.format( "waited %s millis and still element is not visible", unit.toMillis( timeout ) ), e );
+        }
+    }
+
+    protected <V> V waitForPredicate( long timeout, TimeUnit unit, ExpectedCondition<V> predicate ){
         try
         {
             stopWatch.start( ELEMENT_WAIT );
-            new WebDriverWait( webDriver, unit.toMillis( timeout ), SLEEP_DELTA_MILLIS )
+            return new WebDriverWait( webDriver, unit.toMillis( timeout ), SLEEP_DELTA_MILLIS )
                     .pollingEvery( SLEEP_DELTA_MILLIS, TimeUnit.MILLISECONDS )
                     .withTimeout( timeout, unit )
                     .ignoring( RuntimeException.class, ElementNotVisibleException.class )
                     .until( predicate );
         } catch ( Exception e )
         {
-            throw new ElementNotVisibleException( String.format( "waited %s millis and still element is not visible", unit.toMillis( timeout ) ), e );
+            throw new RuntimeException( String.format( "waited %s millis for predicate [%s] and failed", predicate.toString(), unit.toMillis( timeout ) ), e );
         } finally
         {
             stopWatch.stop( ELEMENT_WAIT );
         }
+
+    }
+
+
+    protected <V> V  waitForPredicate( ExpectedCondition<V> predicate ){
+        return waitForPredicate( DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS, predicate );
     }
 
     /**

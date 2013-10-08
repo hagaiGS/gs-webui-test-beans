@@ -2,11 +2,14 @@ package webui.tests.selenium;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webui.tests.SeleniumSwitchManager;
+import webui.tests.annotations.NoEnhancement;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -66,7 +69,9 @@ public class GsLocators {
 
         private final ElementLocator locator;
         private boolean firstDisplayed = false;
+        private boolean switchTo = false;
         private WebDriver webDriver = null;
+        private SeleniumSwitchManager switchManager = null;
         private Field field;
         // todo : add cache.
 
@@ -77,17 +82,22 @@ public class GsLocators {
             }
         };
 
-
-        public ElementHandler( Field field, ElementLocator locator, WebDriver webDriver ) {
+        public ElementHandler( Field field, ElementLocator locator, WebDriver webDriver, SeleniumSwitchManager switchManager  ) {
             this.locator = locator;
             this.webDriver = webDriver;
             this.field = field;
+            this.switchManager = switchManager;
             logger.debug( "created handler for [{}]", field );
         }
 
         public ElementHandler setFirstDisplayed( boolean firstDisplayed ) {
             logger.debug( "setting firstDisplayed [{}] for [{}]", firstDisplayed, field );
             this.firstDisplayed = firstDisplayed;
+            return this;
+        }
+
+        public ElementHandler setSwitchTo( boolean switchTo ){
+            this.switchTo = switchTo;
             return this;
         }
 
@@ -104,12 +114,25 @@ public class GsLocators {
         }
 
         private WebElement locateElement(){
-            if ( firstDisplayed ){
-                return getFirstDisplayed();
-            }else{
-                return locator.findElement();
+            try{
+               if ( switchElement != null ){
+                   return switchElement;
+               }
+                if ( firstDisplayed ){
+                    return  getFirstDisplayed();
+                }else{
+                    return  locator.findElement();
+                }
+            }catch( RuntimeException e ){
+                try{
+                logger.info("could not find element. This is the body text \n" + webDriver.findElement( By.cssSelector("body")).getText() );
+                }catch( Exception err){  }
+
+                throw e;
             }
         }
+
+        WebElement switchElement = null;
 
         @Override
         public Object intercept( Object o, Method method, Object[] objects, MethodProxy methodProxy ) throws Throwable {
@@ -120,25 +143,59 @@ public class GsLocators {
             logger.debug( "[{}] intercepted method [{}] on object [{}]. Will search for first displayed [{}]", new Object[]{field, method, o, firstDisplayed} );
             if ( o instanceof GsSeleniumComponent )
             {
+                WebElement element = null;
+                boolean shouldSwitch = switchTo;
                 // since we call "setWebElement" and "setWebDriver" from within THIS FUNCTION, we must not capture them
                 // to avoid infinite recursive loop
-                if ( !method.getName().equals( "setWebElement" ) && !method.getName().equals( "setWebDriver" ) )
+                if ( !method.isAnnotationPresent(NoEnhancement.class)  )
                 {
                     GsSeleniumComponent comp = ( GsSeleniumComponent ) o;
 
-                    WebElement element = locateElement();
+                    element = locateElement();
 
-                    comp.setWebElement( element );
+                    if ( !switchTo ){
+                        comp.setWebElement( element );
+                    }
                     comp.setWebDriver( webDriver );
+                    comp.setSwitchManager( switchManager );
+                }else{
+                    shouldSwitch = false;
                 }
 
                 try
                 {
-                    return methodProxy.invokeSuper( o, objects );
+                    if ( shouldSwitch ){
+                        switchElement = switchManager.enter( element );
+
+                    }
+
+                    Object o1;
+                    if ( method.getName().equals("enterFrame")){
+
+                        switchManager.enter( element );
+                        o1 = o;
+
+                    }else if ( method.getName().equals("exitFrame") ){
+
+                        switchManager.leave( element );
+                        o1 = o;
+                    }else{
+                        o1 = methodProxy.invokeSuper(o, objects);
+                    }
+
+
+                    if ( shouldSwitch ){
+
+                        switchElement = switchManager.leave( element );
+
+                    }
+
+                    return o1;
                 } catch ( InvocationTargetException e )
                 {
                     throw e.getCause();
                 }
+
 
             }
 

@@ -16,9 +16,9 @@ import java.io.File;
  * Date: 4/10/13
  * Time: 6:07 PM
  */
-public class SnapshotListener extends RunListener {
+public class JUnitSnapshotListener extends RunListener {
 
-    private static Logger logger = LoggerFactory.getLogger( SnapshotListener.class );
+    private static Logger logger = LoggerFactory.getLogger( JUnitSnapshotListener.class );
 
     @Override
     public void testFailure( Failure failure ) throws Exception {

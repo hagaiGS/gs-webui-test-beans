@@ -12,8 +12,10 @@ import org.openqa.selenium.support.pagefactory.FieldDecorator;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import webui.tests.SeleniumSwitchManager;
 import webui.tests.annotations.Absolute;
 import webui.tests.annotations.FirstDisplayed;
+import webui.tests.annotations.SwitchTo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -30,11 +32,13 @@ public class GsFieldDecorator implements FieldDecorator, ApplicationContextAware
 
     final SearchContext searchContext;
     private final WebDriver webDriver;
+    private final SeleniumSwitchManager switchManager;
     private ApplicationContext applicationContext = null;
 
 
-    public GsFieldDecorator( SearchContext searchContext, WebDriver webDriver ) {
+    public GsFieldDecorator( SearchContext searchContext, WebDriver webDriver, SeleniumSwitchManager switchManager ) {
         this.searchContext = searchContext;
+        this.switchManager = switchManager;
         this.webDriver = webDriver;
         defaultFieldDecorator = new DefaultFieldDecorator( new DefaultElementLocatorFactory( searchContext ) );
     }
@@ -72,8 +76,9 @@ public class GsFieldDecorator implements FieldDecorator, ApplicationContextAware
     }
 
     private GsLocators.ElementHandler getElementHandler( Field field ) {
-        return new GsLocators.ElementHandler( field, getLocator( field ), webDriver )
-                .setFirstDisplayed( field.isAnnotationPresent( FirstDisplayed.class ) );
+        return new GsLocators.ElementHandler( field, getLocator( field ), webDriver, switchManager )
+                .setFirstDisplayed( field.isAnnotationPresent( FirstDisplayed.class ) )
+                .setSwitchTo( field.isAnnotationPresent( SwitchTo.class ));
     }
 
     private ElementLocator getLocator( Field field ) {

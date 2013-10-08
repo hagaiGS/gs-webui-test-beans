@@ -4,9 +4,13 @@ import com.thoughtworks.selenium.Selenium;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import webui.tests.utils.CollectionUtils;
@@ -24,6 +28,8 @@ public abstract class GsPage<T extends GsPage> extends AbstractComponent<T> {
 
    @Autowired
     protected Selenium selenium;
+
+    private static Logger logger = LoggerFactory.getLogger(GsPage.class);
 
     public boolean isTextPresent( String text ) {
         return selenium.isTextPresent( text );
@@ -59,6 +65,20 @@ public abstract class GsPage<T extends GsPage> extends AbstractComponent<T> {
         return ( T ) this;
     }
 
+    public  T enterFrame(){
+       return null;
+    }
+
+    // goes back to default content
+    public T exitAllFrames(){
+        switchManager.leaveAll();
+        return (T) this;
+    }
+
+    public T exitFrame(){
+        return null;
+    }
+
 
     public boolean isTextInPopups(String containedText) {
         Collection<WebElement> popups = findDisplayedWindowDialogs();
@@ -76,16 +96,29 @@ public abstract class GsPage<T extends GsPage> extends AbstractComponent<T> {
         return false;
     }
 
-    public T closeDialog( String str ){
-        WebElement e = findFirstDisplayedWindowDialog();
-        List<WebElement> buttons = e.findElements( By.cssSelector( "button" ) );
-        for ( WebElement button  : buttons )
-        {
-            if ( button.getText().equalsIgnoreCase( str )){
-                button.click();
-                break;
-            }
-        }
+    public T closeDialog( final String str ){
+        WebElement button = waitForPredicate(
+                new ExpectedCondition<WebElement>() {
+                    @Override
+                    public WebElement apply( WebDriver webDriver) {
+                        WebElement e =  findFirstDisplayedWindowDialog();
+                        if ( e != null ){
+                            logger.info("found dialog. searching for button [{}]", str );
+                            Collection<WebElement> buttons = e.findElements( By.cssSelector( "button" ) );
+                            if (!CollectionUtils.isEmpty(buttons)) {
+                                logger.info("I have [{}] buttons.", buttons.size());
+                                for (WebElement button : buttons) {
+                                    if (button.getText().equalsIgnoreCase(str)) {
+                                        return button;
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                }
+        );
+         button.click();
         return (T) this;
     }
 
