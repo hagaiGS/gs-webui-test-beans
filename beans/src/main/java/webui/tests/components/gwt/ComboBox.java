@@ -1,12 +1,19 @@
 package webui.tests.components.gwt;
 
+import org.apache.commons.collections.Predicate;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import webui.tests.annotations.OnLoad;
 import webui.tests.components.abstracts.AbstractComponent;
 import webui.tests.utils.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,8 +26,26 @@ public class ComboBox extends AbstractComponent<ComboBox> {
     @FindBy(tagName = "input")
     private WebElement active;
 
-    public String active() {
+    @OnLoad
+    @FindBy( css = ".icon")
+    private WebElement dropDownButton;
+
+
+    @FindBy( css=".list-wrapper ul li")
+    private List<WebElement> options;
+
+    private static Logger logger = LoggerFactory.getLogger(ComboBox.class);
+
+    public String getActiveValue() {
         return active.getAttribute("value");
+    }
+
+    public WebElement getActiveElement(){
+        return active;
+    }
+
+    public String getActiveText(){
+        return active.getText();
     }
 
     public void select(String name) {
@@ -34,11 +59,32 @@ public class ComboBox extends AbstractComponent<ComboBox> {
         }
     }
 
+    /**
+     * Using a wait for until we have text.
+     * @param name
+     * @return
+     */
     public boolean has(final String name) {
-        return CollectionUtils.find(getItems(), new CollectionUtils.Predicate<WebElement>() {
+
+        Collection<WebElement> items = waitForPredicate(new ExpectedCondition<Collection<WebElement>>() {
+
             @Override
-            public boolean apply(WebElement el) {
-                return el.getText().equals(name);
+            public Collection<WebElement> apply(WebDriver webDriver) {
+                Collection<WebElement> items = getItems();
+                for ( WebElement elem : items ){
+                    // break if we don't have strings at all..
+                    if ( elem.getText().trim().length()  > 0){
+                        return items;
+                    }
+
+            }
+                return null;
+        }});
+
+        return CollectionUtils.find(items, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return name.equalsIgnoreCase(((WebElement) o).getText());
             }
         }) != null;
     }
@@ -53,9 +99,9 @@ public class ComboBox extends AbstractComponent<ComboBox> {
 
     private List<WebElement> getItems() {
         // expand the list, there's no way to find the elements without them being visible
-        webElement.findElement(By.cssSelector(".icon")).click();
-        List<WebElement> items = webElement.findElements(By.cssSelector(".list-wrapper ul li"));
-        return items;
+        dropDownButton.click();
+        waitForCollectionSize(options, SizeCondition.gt(0));
+        return options;
     }
 
 }
