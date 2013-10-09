@@ -14,4 +14,12 @@ public interface CloudifyTestBean {
     public CloudifyCliManager.Execution bootstrap();
 
     public CloudifyCliManager.Execution teardown();
+
+    public CloudifyCliManager.Execution installApplication();
+
+    public CloudifyCliManager.Execution uninstallApplication();
+
+    public CloudifyCliManager.Execution installService();
+
+    public CloudifyCliManager.Execution uninstallService();
 }
