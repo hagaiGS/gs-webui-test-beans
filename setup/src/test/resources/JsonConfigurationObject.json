@@ -1,0 +1,5 @@
+{
+    "configurationObject" :"This is from the JSON file",
+
+    "moreConfiguration": { "moreConfiguration":"this is more configuration"}
+}
