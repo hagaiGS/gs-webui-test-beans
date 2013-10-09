@@ -10,8 +10,11 @@ import webui.tests.utils.ListUtils;
 
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 
 /**
@@ -25,57 +28,58 @@ public class SeleniumSwitchManager {
 
     private static Logger logger = LoggerFactory.getLogger(SeleniumSwitchManager.class);
 
-    private Deque<WebElement> switchPath = new LinkedList<WebElement>();
+    private Stack<WebElement> switchStack = new Stack<WebElement>();
 
     @Autowired
     private WebDriver webDriver;
 
 
-    private void switchToPath() {
 
+    public void enter(WebElement e) {
+        switchStack.push(e);
+        enterStack();
+    }
+
+    private void enterStack( ){
         webDriver.switchTo().defaultContent();
-        List<WebElement> pathToTraverse = ListUtils.removeDuplicates(switchPath);
-        Collections.reverse(pathToTraverse);
-        for (WebElement webElement :  pathToTraverse ) {
-            try {
-                webDriver.switchTo().frame(webElement);
-            } catch (RuntimeException e) {
-                logger.error("unable to switch to " + webElement);
-                throw e;
+
+        Set<WebElement> memory = new HashSet<WebElement>();
+
+        for (WebElement webElement : switchStack) {
+            if ( !memory.contains(webElement)){
+                memory.add(webElement);
+                try{
+                    webDriver.switchTo().frame( webElement );
+                }catch(Exception e){
+                    logger.error("nable to switch to element",e);
+                }
             }
-
         }
     }
 
-    public void enter( List<WebElement> path ){
-        switchPath.clear();
-        switchPath.addAll(path);
-        switchToPath();
+
+
+    public SeleniumSwitchManager enter(List<WebElement> handler) {
+        switchStack.clear();
+        switchStack.addAll(handler);
+        enterStack();
+        return this;
     }
 
-    public void leaveAll(){
-        switchPath.clear();
+    public SeleniumSwitchManager goToDefaultContent(){
         webDriver.switchTo().defaultContent();
+        return this;
     }
 
-    public WebElement enter(WebElement webElement) {
-        switchPath.push(webElement);
-        switchToPath();
-        return webElement;
+    public void exit() {
+        switchStack.pop();
+        webDriver.switchTo().defaultContent();
+        enterStack();
     }
 
-
-    public WebElement leave(WebElement webElement) {
-        if (!switchPath.peek().equals(webElement)) {
-            throw new RuntimeException(String.format("leaving object that I did not switch to!"));
-        } else {
-            WebElement pop = switchPath.pop();
-            switchToPath();
-            return pop.equals(webElement) ? webElement : null;
-        }
-
+    public List<WebElement> getCurrentPath() {
+        return new LinkedList<WebElement>(switchStack);
     }
-
 
     public SeleniumSwitchManager setWebDriver(WebDriver webDriver) {
         this.webDriver = webDriver;

@@ -5,12 +5,13 @@ import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import webui.tests.components.abstracts.GsPage;
+import webui.tests.annotations.SwitchTo;
+import webui.tests.components.abstracts.AbstractComponent;
 
 import java.util.List;
 
 @Component
-public class ExtensionsTestPage extends GsPage<ExtensionsTestPage> {
+public class ExtensionsTestPage extends AbstractComponent<ExtensionsTestPage> {
 
     public String location="http://beans.gsdev.info";
 
@@ -19,10 +20,18 @@ public class ExtensionsTestPage extends GsPage<ExtensionsTestPage> {
     @FindBy( css = "select")
     public webui.tests.components.html.Select select;
 
+    @FindBy( css = "iframe.first")
+    @SwitchTo
+    public Iframe1Page iframe1Page;
+
     public void goTo(){
-        logger.info("loading [{}]", location );
+        logger.info("loading [{}]", location);
         webDriver.get(location);
         load();
+    }
+
+    public Iframe1Page getIframe1Page(){
+        return iframe1Page;
     }
 
     public void setLocation(String location) {

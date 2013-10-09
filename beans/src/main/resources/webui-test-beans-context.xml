@@ -9,11 +9,13 @@
     <bean id="driverFactory" class="webui.tests.SeleniumDriverFactory" init-method="init" destroy-method="quit" >
         <property name="driverTypeString" value="#{systemProperties['selenium.browser']?: 'chrome'}"/>
         <property name="driverType" value="CHROME"/>
-        <property name="rootUrl" value="http://www.google.com/"/>
+
+        <!--<property name="rootUrl" value="http://www.google.com/"/>-->
     </bean>
 
     <bean id="webDriver" class="org.openqa.selenium.WebDriver" factory-bean="driverFactory" factory-method="getDriver"/>
-    <bean id="selenium" class="com.thoughtworks.selenium.Selenium" factory-bean="driverFactory" factory-method="getSelenium"/>
+    <!-- selenium interface is deprecated, we should use web driver. But just in case web driver does not cover something..-->
+    <!--<bean id="selenium" class="com.thoughtworks.selenium.Selenium" factory-bean="driverFactory" factory-method="getSelenium"/>-->
 
     <context:component-scan base-package="webui.tests"/>
     <context:annotation-config/>

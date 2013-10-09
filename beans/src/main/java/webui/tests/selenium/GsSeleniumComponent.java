@@ -3,6 +3,7 @@ package webui.tests.selenium;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import webui.tests.SeleniumSwitchManager;
+import webui.tests.components.conditions.WaitMethods;
 
 /**
  * User: guym
@@ -19,5 +20,9 @@ public interface GsSeleniumComponent<T extends GsSeleniumComponent> {
     public T setWebDriver( WebDriver webDriver );
 
     public T setSwitchManager( SeleniumSwitchManager switchManager );
+
+    public WebElement getRootElement();
+
+    public T setWaitFor( WaitMethods waitFor );
 
 }
