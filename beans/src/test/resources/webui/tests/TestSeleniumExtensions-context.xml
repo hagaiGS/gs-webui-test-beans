@@ -18,6 +18,15 @@
         <bean id="testPage" class="webui.beans.ExtensionsTestPage">
             <property name="location" value="http://localhost:8082/public/pages/testPages/elements.html"/>
         </bean>
+        <bean id="driverFactory" class="webui.tests.SeleniumDriverFactory" init-method="init" destroy-method="quit" >
+                <property name="driverTypeString" value="#{systemProperties['selenium.browser']?: 'chrome'}"/>
+                <property name="driverType" value="CHROME"/>
+                <property name="chromeDriverPath" value="file:beans/src/test/resources/selenium-drivers/chromedriver_linux64_2.1/chromedriver"/>
+                <!--<property name="rootUrl" value="http://www.google.com/"/>-->
+
+        </bean>
     </beans>
+
+
 
 </beans>

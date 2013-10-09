@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webui.tests.annotations.OnLoad;
 import webui.tests.components.abstracts.AbstractComponent;
+import webui.tests.components.conditions.SizeCondition;
 import webui.tests.utils.CollectionUtils;
 
 import java.util.ArrayList;
@@ -66,20 +67,21 @@ public class ComboBox extends AbstractComponent<ComboBox> {
      */
     public boolean has(final String name) {
 
-        Collection<WebElement> items = waitForPredicate(new ExpectedCondition<Collection<WebElement>>() {
+        Collection<WebElement> items = (Collection<WebElement>) waitFor.predicate(new ExpectedCondition<Collection<WebElement>>() {
 
             @Override
             public Collection<WebElement> apply(WebDriver webDriver) {
                 Collection<WebElement> items = getItems();
-                for ( WebElement elem : items ){
+                for (WebElement elem : items) {
                     // break if we don't have strings at all..
-                    if ( elem.getText().trim().length()  > 0){
+                    if (elem.getText().trim().length() > 0) {
                         return items;
                     }
 
-            }
+                }
                 return null;
-        }});
+            }
+        });
 
         return CollectionUtils.find(items, new Predicate() {
             @Override
@@ -100,7 +102,7 @@ public class ComboBox extends AbstractComponent<ComboBox> {
     private List<WebElement> getItems() {
         // expand the list, there's no way to find the elements without them being visible
         dropDownButton.click();
-        waitForCollectionSize(options, SizeCondition.gt(0));
+        waitFor.size(options, SizeCondition.gt(0));
         return options;
     }
 
