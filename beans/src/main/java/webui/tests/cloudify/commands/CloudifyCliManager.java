@@ -46,6 +46,10 @@ public class CloudifyCliManager {
         return init( new Connect() );
     }
 
+    public InstallApplication installApplication() {
+        return init( new InstallApplication() );
+    }
+
     public ListApplications listApplications(){
         return init( new ListApplications() );
     }

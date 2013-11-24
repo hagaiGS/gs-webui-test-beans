@@ -3,10 +3,7 @@ package webui.tests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import webui.tests.cloudify.commands.Bootstrap;
-import webui.tests.cloudify.commands.CloudifyCliManager;
-import webui.tests.cloudify.commands.Connect;
-import webui.tests.cloudify.commands.Teardown;
+import webui.tests.cloudify.commands.*;
 
 /**
  * User: guym
@@ -31,6 +28,9 @@ public class CloudifyTestBeanImpl implements CloudifyTestBean {
     @Autowired
     private Connect.Details connectFlags;
 
+    @Autowired
+    private InstallApplication.Details installApplicationFlags;
+
     /************* Connect Flags *****************/
 
     private int restPort = 8100;
@@ -49,6 +49,12 @@ public class CloudifyTestBeanImpl implements CloudifyTestBean {
         return cloudifyCliManager.bootstrap().details( bootstrapFlags ).execute();
     }
 
+    @Override
+    public CloudifyCliManager.Execution installApplication() {
+        logger.info( "cloudify bean install application" );
+        return cloudifyCliManager.installApplication().details(installApplicationFlags).execute();
+    }
+
 
     public void setCloudifyCliManager( CloudifyCliManager cloudifyCliManager ) {
         this.cloudifyCliManager = cloudifyCliManager;
@@ -64,5 +70,9 @@ public class CloudifyTestBeanImpl implements CloudifyTestBean {
 
     public void setConnectFlags( Connect.Details connectFlags ) {
         this.connectFlags = connectFlags;
+    }
+
+    public void setInstallApplicationFlags(InstallApplication.Details installApplicationFlags) {
+        this.installApplicationFlags = installApplicationFlags;
     }
 }

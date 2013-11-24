@@ -57,6 +57,7 @@ public class LoginPage extends GsPage<ComplexLoginPage>{
 
 
     public LoginPage gotoPage(){
+        logger.info("going to page at url [{}]", rootUrl);
         webDriver.get( rootUrl );
         load();
         return this;

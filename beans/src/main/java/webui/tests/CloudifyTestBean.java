@@ -11,7 +11,9 @@ import webui.tests.cloudify.commands.CloudifyCliManager;
 public interface CloudifyTestBean {
 
 
-    public CloudifyCliManager.Execution bootstrap();
+    CloudifyCliManager.Execution bootstrap();
 
-    public CloudifyCliManager.Execution teardown();
+    CloudifyCliManager.Execution teardown();
+
+    CloudifyCliManager.Execution installApplication();
 }

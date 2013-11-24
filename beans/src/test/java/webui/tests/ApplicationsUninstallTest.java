@@ -41,6 +41,7 @@ public class ApplicationsUninstallTest {
     public void before(){
         logger.info( "bootstrapping" );
         cloudifyManager.bootstrap();
+        cloudifyManager.installApplication();
     }
 
     @After
@@ -73,6 +74,27 @@ public class ApplicationsUninstallTest {
         loginPage.gotoPage().login().gotoApplications().load()
                 .uninstallDefaultService(SERVICE_NAME)
                 .closeDialog("yes")
+                .waitForServiceUninstall(SERVICE_NAME);
+
+        List<String> installedServices = applicationsPage.listDefaultServices();
+        logger.info("uninstalled [{}], installed services are now [{}]", SERVICE_NAME, installedServices);
+
+
+        Assert.assertTrue(String.format(
+                "service [%s] should no longer appear under the installed services [%s]",
+                SERVICE_NAME, installedServices),
+                !installedServices.contains(SERVICE_NAME));
+
+    }
+
+    @Test
+    public void uninstallServiceSecuredModeTest() {
+        logger.info( "uninstall service test" );
+
+        logger.info("uninstalling service [{}]...", SERVICE_NAME);
+        loginPage.gotoPage().login().gotoApplications().load()
+                .uninstallDefaultService(SERVICE_NAME)
+                .closeDialog("install")
                 .waitForServiceUninstall(SERVICE_NAME);
 
         List<String> installedServices = applicationsPage.listDefaultServices();

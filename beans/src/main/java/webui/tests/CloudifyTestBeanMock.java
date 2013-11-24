@@ -18,4 +18,9 @@ public class CloudifyTestBeanMock implements CloudifyTestBean{
     public CloudifyCliManager.Execution teardown() {
         return null;
     }
+
+    @Override
+    public CloudifyCliManager.Execution installApplication() {
+        return null;
+    }
 }

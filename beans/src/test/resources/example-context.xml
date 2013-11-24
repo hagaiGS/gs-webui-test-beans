@@ -11,10 +11,11 @@
 
     <bean id="executorFactory" class="webui.tests.exec.ExecutorFactory"/>
     <bean id="driverFactory" class="webui.tests.SeleniumDriverFactory" init-method="init" destroy-method="quit" >
-         <property name="driverTypeString" value="#{systemProperties['selenium.browser']?: 'chrome'}"/>
-        <property name="driverType" value="CHROME"/>
-        <property name="rootUrl" value="http://localhost:8099/"/>
-
+        <property name="driverTypeString" value="#{systemProperties['selenium.browser']?: 'chrome'}"/>
+        <property name="driverType" value="FIREFOX"/>
+<!--
+        <property name="rootUrl" value="https://localhost:8888/Gs_webui.html?gwt.codesvr=127.0.0.1:9997"/>
+-->
     </bean>
 
     <bean id="rootUrl" class="java.lang.String">
@@ -33,6 +34,10 @@
     <bean id="recipesRepositoryTestConf" class="webui.tests.RecipesRepositoryTest$RecipesRepositoryTestConf">
         <property name="progressConsoleText" value="Starting Non-Interactive Shell" />
         <property name="progressDialogText" value="Installation started" />
+    </bean>
+
+    <bean id="installApplicationFlags" class="webui.tests.cloudify.commands.InstallApplication$Details">
+        <property name="name" value="helloworld" />
     </bean>
 
     <context:component-scan base-package="webui.tests"/>
