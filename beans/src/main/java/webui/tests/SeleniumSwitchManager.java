@@ -35,13 +35,24 @@ public class SeleniumSwitchManager {
 
 
 
-    public void enter(WebElement e) {
+    synchronized public void enter(WebElement e) {
+        printIframeSrc(e);
         switchStack.push(e);
         enterStack();
     }
 
-    private void enterStack( ){
-        webDriver.switchTo().defaultContent();
+    synchronized private void printIframeSrc( WebElement webElement ){
+        try{
+            String src = webElement.getAttribute("src");
+            logger.trace("entering iframe src [{}]", src);
+        }catch(Exception e){
+            logger.error("unable to print src attribute", e);
+        }
+    }
+
+    synchronized private void enterStack( ){
+
+        goToDefaultContent();
 
         Set<WebElement> memory = new HashSet<WebElement>();
 
@@ -49,9 +60,10 @@ public class SeleniumSwitchManager {
             if ( !memory.contains(webElement)){
                 memory.add(webElement);
                 try{
+                    printIframeSrc( webElement );
                     webDriver.switchTo().frame( webElement );
                 }catch(Exception e){
-                    logger.error("nable to switch to element",e);
+                    logger.error("unable to switch to element",e);
                 }
             }
         }
@@ -59,29 +71,29 @@ public class SeleniumSwitchManager {
 
 
 
-    public SeleniumSwitchManager enter(List<WebElement> handler) {
+    synchronized public SeleniumSwitchManager enter(List<WebElement> handler) {
         switchStack.clear();
         switchStack.addAll(handler);
         enterStack();
         return this;
     }
 
-    public SeleniumSwitchManager goToDefaultContent(){
+    synchronized public SeleniumSwitchManager goToDefaultContent(){
+        logger.debug("switching default content");
         webDriver.switchTo().defaultContent();
         return this;
     }
 
-    public void exit() {
+    synchronized public void exit() {
         switchStack.pop();
-        webDriver.switchTo().defaultContent();
         enterStack();
     }
 
-    public List<WebElement> getCurrentPath() {
+    synchronized public List<WebElement> getCurrentPath() {
         return new LinkedList<WebElement>(switchStack);
     }
 
-    public SeleniumSwitchManager setWebDriver(WebDriver webDriver) {
+    synchronized public SeleniumSwitchManager setWebDriver(WebDriver webDriver) {
         this.webDriver = webDriver;
         return this;
     }

@@ -25,4 +25,6 @@ public interface GsSeleniumComponent<T extends GsSeleniumComponent> {
 
     public T setWaitFor( WaitMethods waitFor );
 
+    public T load();
+
 }

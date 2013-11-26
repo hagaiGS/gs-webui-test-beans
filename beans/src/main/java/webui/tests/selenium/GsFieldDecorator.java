@@ -6,7 +6,6 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
@@ -94,11 +93,14 @@ public class GsFieldDecorator implements FieldDecorator {
 
                 switchManager.enter( getElementHandler(field).getSwitchTo() );
 
-                initElementsForEnhancedObject(new GsFieldDecorator(rootElement, webDriver).setSwitchManager(switchManager).setWaitFor(waitFor), enhancedObject);
+                enhancedObject.load();
+//                initElementsForEnhancedObject(new GsFieldDecorator(rootElement, webDriver).setSwitchManager(switchManager).setWaitFor(waitFor), enhancedObject);
 
                 switchManager.exit();
             }else{
-                initElementsForEnhancedObject(new GsFieldDecorator( enhancedObject.getRootElement(), webDriver).setSwitchManager( switchManager ).setWaitFor(waitFor), enhancedObject);
+                enhancedObject.getRootElement(); // initialize root element
+                enhancedObject.load();
+//                initElementsForEnhancedObject(new GsFieldDecorator( enhancedObject.getRootElement(), webDriver).setSwitchManager( switchManager ).setWaitFor(waitFor), enhancedObject);
             }
         } catch (RuntimeException e) {
             String msg = String.format("problems loading field [%s]", field.getClass().getName() + "#" + field.getName());
