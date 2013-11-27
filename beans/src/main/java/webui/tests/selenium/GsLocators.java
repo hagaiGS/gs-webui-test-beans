@@ -74,13 +74,32 @@ public class GsLocators {
             return locateElement();
         }
 
+
+
+        private boolean isFirstLoad( Field field, Method method, Object o ){
+            if ( o instanceof GsSeleniumComponent && "load".equals(method.getName()) ){
+                GsSeleniumComponent comp = (GsSeleniumComponent)o;
+                boolean loaded = comp.isLoaded();
+                if ( loaded ){
+                    logger.info("already loaded, reloading [{}]", fieldToString(field, method));
+                }
+                return !loaded;
+            }
+            return false;
+        }
+
+        private String fieldToString(Field field, Method method){
+            return field.getDeclaringClass().getSimpleName() + "." + field.getName() + "#" + method.getName();
+        }
+
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            if ( method.isAnnotationPresent(NoEnhancement.class)){
+            if ( method.isAnnotationPresent(NoEnhancement.class) || isFirstLoad( field, method, o) ){
+                logger.debug("unenhanced [{}]", fieldToString(field,method));
                 return  methodProxy.invokeSuper(o, objects);
             }
 
-            logger.debug("[{}] intercepted method [{}] on object [{}]", field, method, o);
+            logger.debug("intercepted [{}]", fieldToString(field,method));
             if (o instanceof GsSeleniumComponent) {
                 GsSeleniumComponent comp = (GsSeleniumComponent) o;
 

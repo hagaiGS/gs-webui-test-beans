@@ -64,36 +64,24 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
     }
 
     @NoEnhancement
-    private T load(SearchContext searchContext) {
+    public T load(SearchContext searchContext) {
         logger.info("loading");
-        loaded = true;
         PageFactory.initElements(new GsFieldDecorator(searchContext, webDriver).setSwitchManager(switchManager).setWaitFor(waitFor), this);
+        loaded = true;
         return (T) this;
     }
 
 
-    @NoEnhancement
     public T load(){
-        if ( loaded ){
-            throw new RuntimeException("already loaded. use reload");
-        }
         return load( webElement == null ? webDriver : webElement );
     }
 
-    /**
-     * The reload method is the correct method to use when you want to manually reload the object.
-     * The reason for this is that to properly load a page within an iframe, you must switch
-     * to that iframe first.
-     *
-     * When we first initialize the Since {@link #load()} is
-     * @return
-     */
-    // intended for reloading iframe page objects.
-    // for iframes, we do need enhancements.
-    public T reload(){
-        return load( webElement == null ? webDriver : webElement);
-    }
 
+    @NoEnhancement
+    @Override
+    public boolean isLoaded() {
+        return loaded;
+    }
 
     @NoEnhancement
     public T setWaitFor( WaitMethods waitFor) {
