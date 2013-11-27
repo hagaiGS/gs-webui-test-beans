@@ -1,0 +1,32 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <import resource="classpath:webui-test-beans-context.xml"/>
+    <context:component-scan base-package="webui.beans"/>
+    <context:annotation-config/>
+
+    <!--<bean id="testPage" class="webui.beans.ExtensionsTestPage">-->
+        <!--<property name="location" value="http://localhost:8082/public/pages/testPages/elements.html"/>-->
+    <!--</bean>-->
+
+    <beans profile="localhost"> <!-- example on how you can override spring configuration combined with Maven profile. -->
+        <bean id="testPage" class="webui.beans.ExtensionsTestPage">
+            <property name="location" value="http://localhost:8082/public/pages/testPages/elements.html"/>
+        </bean>
+        <bean id="driverFactory" class="webui.tests.SeleniumDriverFactory" init-method="init" destroy-method="quit" >
+                <property name="driverTypeString" value="#{systemProperties['selenium.browser']?: 'chrome'}"/>
+                <property name="driverType" value="CHROME"/>
+                <property name="chromeDriverPath" value="file:beans/src/test/resources/selenium-drivers/chromedriver_linux64_2.1/chromedriver"/>
+                <!--<property name="rootUrl" value="http://www.google.com/"/>-->
+
+        </bean>
+    </beans>
+
+
+
+</beans>
