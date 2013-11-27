@@ -11,11 +11,10 @@
 
     <bean id="executorFactory" class="webui.tests.exec.ExecutorFactory"/>
     <bean id="driverFactory" class="webui.tests.SeleniumDriverFactory" init-method="init" destroy-method="quit" >
-        <property name="driverTypeString" value="#{systemProperties['selenium.browser']?: 'chrome'}"/>
-        <property name="driverType" value="FIREFOX"/>
-<!--
-        <property name="rootUrl" value="https://localhost:8888/Gs_webui.html?gwt.codesvr=127.0.0.1:9997"/>
--->
+         <property name="driverTypeString" value="#{systemProperties['selenium.browser']?: 'chrome'}"/>
+        <property name="driverType" value="CHROME"/>
+        <property name="rootUrl" value="http://localhost:8099/"/>
+
     </bean>
 
     <bean id="rootUrl" class="java.lang.String">
@@ -25,21 +24,17 @@
     <bean id="webDriver" class="org.openqa.selenium.WebDriver" factory-bean="driverFactory" factory-method="getDriver"/>
     <bean id="selenium" class="com.thoughtworks.selenium.Selenium" factory-bean="driverFactory" factory-method="getSelenium"/>
 
-    <bean id="licenseTestConf" class="webui.tests.LicenseTest$LicenseTestConf">
-        <property name="aboutText" value="cloudify"/>
-        <property name="username" value="guy"/>
-        <property name="password" value="guy"/>
-    </bean>
+    <!--<bean id="licenseTestConf" class="webui.webui.tests.LicenseTest$LicenseTestConf">-->
+        <!--<property name="aboutText" value="cloudify"/>-->
+        <!--<property name="username" value="guy"/>-->
+        <!--<property name="password" value="guy"/>-->
+    <!--</bean>-->
 
-    <bean id="recipesRepositoryTestConf" class="webui.tests.RecipesRepositoryTest$RecipesRepositoryTestConf">
-        <property name="progressConsoleText" value="Starting Non-Interactive Shell" />
-        <property name="progressDialogText" value="Installation started" />
-    </bean>
-
-    <bean id="installApplicationFlags" class="webui.tests.cloudify.commands.InstallApplication$Details">
-        <property name="name" value="helloworld" />
-    </bean>
-
+    <!--<bean id="recipesRepositoryTestConf" class="webui.webui.tests.RecipesRepositoryTest$RecipesRepositoryTestConf">-->
+        <!--<property name="progressConsoleText" value="Starting Non-Interactive Shell" />-->
+        <!--<property name="progressDialogText" value="Installation started" />-->
+    <!--</bean>-->
+<!---->
     <context:component-scan base-package="webui.tests"/>
     <context:annotation-config/>
 </beans>

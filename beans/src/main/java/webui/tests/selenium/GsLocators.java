@@ -2,11 +2,17 @@ package webui.tests.selenium;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
+import org.openqa.selenium.support.pagefactory.FieldDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webui.tests.SeleniumSwitchManager;
+import webui.tests.annotations.NoEnhancement;
+import webui.tests.annotations.SwitchTo;
+import webui.tests.utils.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * User: guym
@@ -24,131 +31,90 @@ public class GsLocators {
 
 
 
-    public static class ListHandler implements MethodInterceptor {
-
-        private final ElementLocator locator;
-        private final Class<? extends GsSeleniumComponent> type;
-        private WebDriver webDriver = null;
-
-        public ListHandler( ElementLocator locator, Class<? extends GsSeleniumComponent> type ) {
-            this.locator = locator;
-            this.type = type;
-        }
-
-
-        @Override
-        public Object intercept( Object o, Method method, Object[] objects, MethodProxy methodProxy ) throws Throwable {
-            List<WebElement> elements = locator.findElements();
-            List<GsSeleniumComponent> components = ( List<GsSeleniumComponent> ) o;
-            components.clear();
-            for ( WebElement element : elements )
-            {
-                GsSeleniumComponent e = type.newInstance();
-                e.setWebElement( element );
-                e.setWebDriver( webDriver );
-                components.add( e );
-            }
-
-            try
-            {
-                return methodProxy.invokeSuper( components, objects );
-            } catch ( InvocationTargetException e )
-            {
-                // Unwrap the underlying exception
-                throw e.getCause();
-            }
-        }
-    }
-
     public static class ElementHandler implements MethodInterceptor {
-
-        private static Logger logger = LoggerFactory.getLogger( ElementHandler.class );
+        private static Logger logger = LoggerFactory.getLogger(ElementHandler.class);
 
         private final ElementLocator locator;
-        private boolean firstDisplayed = false;
         private WebDriver webDriver = null;
         private Field field;
-        // todo : add cache.
+        private boolean isSwitchTo = false;
+        private SeleniumSwitchManager switchManager;
 
-        private static Set<String> ignoredMethods = new HashSet<String>(  ){
-            {
-                add( "toString" );
-                add( "hashCode" );
-            }
-        };
+        private List<WebElement> framePath;
+
+        // this way we know when we actually leave this page
+        // fixes scenario when page calls itself.
+        AtomicInteger switches = new AtomicInteger(0);
 
 
-        public ElementHandler( Field field, ElementLocator locator, WebDriver webDriver ) {
+
+        public ElementHandler(Field field, ElementLocator locator, WebDriver webDriver) {
             this.locator = locator;
             this.webDriver = webDriver;
             this.field = field;
-            logger.debug( "created handler for [{}]", field );
+            this.isSwitchTo = field.isAnnotationPresent( SwitchTo.class );
+            logger.debug( field.getName() + " : created handler for [{}]", field);
         }
 
-        public ElementHandler setFirstDisplayed( boolean firstDisplayed ) {
-            logger.debug( "setting firstDisplayed [{}] for [{}]", firstDisplayed, field );
-            this.firstDisplayed = firstDisplayed;
+        public ElementHandler setSwitchManager( SeleniumSwitchManager switchManager ){
+            this.switchManager = switchManager;
+            framePath = switchManager.getCurrentPath();
+            logger.info( field.getName() + " : my frame path length is : " + CollectionUtils.size(framePath) );
             return this;
         }
 
-        private WebElement getFirstDisplayed( ){
-            List<WebElement> elements = locator.findElements();
-            for ( WebElement webElement : elements )
-            {
-                if ( webElement.isDisplayed() )
-                {
-                    return webElement;
-                }
+        private WebElement locateElement() {
+            if ( isSwitchTo ){
+                switchManager.enter(framePath);
             }
-            return null;
+            return locator.findElement();
         }
 
-        private WebElement locateElement(){
-            if ( firstDisplayed ){
-                return getFirstDisplayed();
-            }else{
-                return locator.findElement();
-            }
+        public WebElement getSwitchTo(){
+            return locateElement();
         }
 
         @Override
-        public Object intercept( Object o, Method method, Object[] objects, MethodProxy methodProxy ) throws Throwable {
-
-            if ( ignoredMethods.contains( method.getName() ) ){
-                return methodProxy.invokeSuper( o, objects );
+        public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+            if ( method.isAnnotationPresent(NoEnhancement.class)){
+                return  methodProxy.invokeSuper(o, objects);
             }
-            logger.debug( "[{}] intercepted method [{}] on object [{}]. Will search for first displayed [{}]", new Object[]{field, method, o, firstDisplayed} );
-            if ( o instanceof GsSeleniumComponent )
-            {
-                // since we call "setWebElement" and "setWebDriver" from within THIS FUNCTION, we must not capture them
-                // to avoid infinite recursive loop
-                if ( !method.getName().equals( "setWebElement" ) && !method.getName().equals( "setWebDriver" ) )
-                {
-                    GsSeleniumComponent comp = ( GsSeleniumComponent ) o;
 
-                    WebElement element = locateElement();
+            logger.debug("[{}] intercepted method [{}] on object [{}]", field, method, o);
+            if (o instanceof GsSeleniumComponent) {
+                GsSeleniumComponent comp = (GsSeleniumComponent) o;
 
-                    comp.setWebElement( element );
-                    comp.setWebDriver( webDriver );
+                WebElement element = locateElement();
+
+                if ( isSwitchTo ){
+                    switches.incrementAndGet();
+                    switchManager.enter( element );
+                    comp.setWebElement( webDriver.findElement(By.cssSelector("body")));
+                }else{
+                    comp.setWebElement(element);
                 }
 
-                try
-                {
-                    return methodProxy.invokeSuper( o, objects );
-                } catch ( InvocationTargetException e )
-                {
+
+                comp.setWebDriver(webDriver);
+
+                try {
+                    return methodProxy.invokeSuper(o, objects);
+                } catch (InvocationTargetException e) {
                     throw e.getCause();
+                } finally{
+
+                    if ( isSwitchTo && switches.decrementAndGet() == 0 ){
+                        switchManager.exit();
+                    }
                 }
 
-            }
-
-            else if ( o instanceof WebElement && firstDisplayed ){// only handle first displayed
+            } else if (o instanceof WebElement ) {// only handle first displayed
                 WebElement displayedElement = locateElement();
 
-                if ( displayedElement != null ){
-                    logger.info( "found first displayed. invoking method" );
-                    return method.invoke( displayedElement, objects );
-                }else{
+                if (displayedElement != null) {
+                    logger.info("found first displayed. invoking method");
+                    return method.invoke(displayedElement, objects);
+                } else {
                     logger.info("unable to detect first displayed");
                 }
             }

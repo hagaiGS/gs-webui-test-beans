@@ -8,19 +8,20 @@
     <parent>
         <groupId>webui.tests</groupId>
         <artifactId>parent</artifactId>
-        <version>9.5.0-SNAPSHOT</version>
+        <version>1.7.0-SNAPSHOT</version>
     </parent>
 
     <groupId>webui.tests</groupId>
     <artifactId>beans</artifactId>
-    <version>9.5.0-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
 
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.6</version>
+            <version>1.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -53,12 +54,6 @@
             <version>3.1.3.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.8</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <artifactId>perf4j</artifactId>
             <groupId>org.perf4j</groupId>
             <version>0.9.16</version>
@@ -78,11 +73,21 @@
             <artifactId>spring-context</artifactId>
             <version>3.1.3.RELEASE</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>junit</groupId>-->
+            <!--<artifactId>junit</artifactId>-->
+            <!--<version>4.8.1</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>compile</scope>
+            <groupId>webui.tests</groupId>
+            <artifactId>utils</artifactId>
+            <version>1.7.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8</version>
         </dependency>
     </dependencies>
 
@@ -94,18 +99,19 @@
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-surefire-plugin</artifactId>
                   <version>2.14</version>
-                  <dependencies>
-                    <dependency>
-                      <groupId>org.apache.maven.surefire</groupId>
-                      <artifactId>surefire-junit47</artifactId>
-                      <version>2.14</version>
-                    </dependency>
-                  </dependencies>
+                  <!--<dependencies>-->
+                    <!--<dependency>-->
+                      <!--<groupId>org.apache.maven.surefire</groupId>-->
+                      <!--<artifactId>surefire-junit47</artifactId>-->
+                      <!--<version>2.14</version>-->
+                    <!--</dependency>-->
+                  <!--</dependencies>-->
                   <configuration>
+                      <argLine>-Dspring.profiles.active=${spring.profile}</argLine>
                       <properties>
                           <property>
                               <name>listener</name>
-                              <value>webui.tests.listeners.SnapshotListener</value>
+                              <value>webui.tests.listeners.TestngSnapshotListener</value>
                           </property>
                       </properties>
                   </configuration>
@@ -123,6 +129,12 @@
 
     <profiles>
         <profile>
+            <id>localhost</id>
+            <properties>
+                <spring.profile>localhost</spring.profile>
+            </properties>
+        </profile>
+        <profile>
             <id>default</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -138,44 +150,13 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>dev</id>
-            <dependencies>
-                <dependency>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                    <version>1.0.9</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <!-- support for firefox versions. see http://selenium.googlecode.com/git/java/CHANGELOG -->
-        <profile>
-            <id>firefox_17</id>
-            <properties>
-                <selenium.version>2.28.0</selenium.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>firefox_19</id>
-            <properties>
-                <selenium.version>2.30.0</selenium.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>firefox_22</id>
-            <properties>
-                <selenium.version>2.33.0</selenium.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>firefox_24</id>
-            <properties>
-                <selenium.version>2.37.0</selenium.version>
-            </properties>
-        </profile>
+        <profile> <id>firefox_17</id> <properties> <selenium.version>2.28.0</selenium.version> </properties> </profile>
+        <profile> <id>firefox_19</id> <properties> <selenium.version>2.30.0</selenium.version> </properties> </profile>
+        <profile> <id>firefox_22</id> <properties> <selenium.version>2.33.0</selenium.version> </properties> </profile>
     </profiles>
 
     <properties>
+            <spring.profile></spring.profile>
             <selenium.version>2.30.0</selenium.version><!-- default to DEV environment.. let the automation script do the hard work -->
     </properties>
 </project>

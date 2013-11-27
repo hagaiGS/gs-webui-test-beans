@@ -1,6 +1,5 @@
-/.idea
-/target
-/beans/beans.iml
-/beans/target
-/*.iml
+.idea
+**/target
+beans/test/resources/selenium-drivers
+**/*.iml
 /chromedriver.log
