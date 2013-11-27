@@ -93,13 +93,13 @@ public class GsFieldDecorator implements FieldDecorator {
 
                 switchManager.enter( getElementHandler(field).getSwitchTo() );
 
-                enhancedObject.load();
+                enhancedObject.load( rootElement == null ? webDriver : rootElement );
 //                initElementsForEnhancedObject(new GsFieldDecorator(rootElement, webDriver).setSwitchManager(switchManager).setWaitFor(waitFor), enhancedObject);
 
                 switchManager.exit();
             }else{
-                enhancedObject.getRootElement(); // initialize root element
-                enhancedObject.load();
+                WebElement rootElement = enhancedObject.getRootElement(); // initialize root element
+                enhancedObject.load( rootElement == null ? webDriver : rootElement );
 //                initElementsForEnhancedObject(new GsFieldDecorator( enhancedObject.getRootElement(), webDriver).setSwitchManager( switchManager ).setWaitFor(waitFor), enhancedObject);
             }
         } catch (RuntimeException e) {
@@ -107,6 +107,10 @@ public class GsFieldDecorator implements FieldDecorator {
             logger.info(msg, e);
             throw new RuntimeException(msg, e);
         }
+    }
+
+    private String fieldToString( Field field ){
+        return field.getClass().getSimpleName() + "." + field.getName();
     }
 
     @Override
