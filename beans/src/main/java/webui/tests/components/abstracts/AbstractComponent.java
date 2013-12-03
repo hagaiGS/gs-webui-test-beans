@@ -31,6 +31,8 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
     @Autowired
     protected WaitMethods waitFor;
 
+    private boolean loaded = false;
+
     private static Logger logger = LoggerFactory.getLogger( AbstractComponent.class );
 
     @Override
@@ -62,17 +64,24 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
     }
 
     @NoEnhancement
-    public T load ( SearchContext searchContext ){
-        PageFactory.initElements( new GsFieldDecorator( searchContext, webDriver ).setSwitchManager( switchManager  ).setWaitFor( waitFor) , this );
+    public T load(SearchContext searchContext) {
+        logger.info("loading");
+        PageFactory.initElements(new GsFieldDecorator(searchContext, webDriver).setSwitchManager(switchManager).setWaitFor(waitFor), this);
+        loaded = true;
         return (T) this;
     }
 
 
-    @NoEnhancement
     public T load(){
         return load( webElement == null ? webDriver : webElement );
     }
 
+
+    @NoEnhancement
+    @Override
+    public boolean isLoaded() {
+        return loaded;
+    }
 
     @NoEnhancement
     public T setWaitFor( WaitMethods waitFor) {

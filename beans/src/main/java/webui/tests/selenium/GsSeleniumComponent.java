@@ -1,5 +1,6 @@
 package webui.tests.selenium;
 
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import webui.tests.SeleniumSwitchManager;
@@ -24,5 +25,9 @@ public interface GsSeleniumComponent<T extends GsSeleniumComponent> {
     public WebElement getRootElement();
 
     public T setWaitFor( WaitMethods waitFor );
+
+    public T load( SearchContext searchContext );
+
+    public boolean isLoaded();
 
 }
