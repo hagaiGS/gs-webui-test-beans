@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import webui.tests.SeleniumSwitchManager;
+import webui.tests.annotations.Absolute;
+import webui.tests.annotations.LazyLoad;
 import webui.tests.annotations.SwitchTo;
 import webui.tests.components.conditions.WaitMethods;
 
@@ -85,8 +87,7 @@ public class GsFieldDecorator implements FieldDecorator {
     private void initializeElement( Field field, GsSeleniumComponent enhancedObject ) {
         field.setAccessible(true);
         logger.debug("loading field :  " + field.getName());
-        enhancedObject.setWaitFor(waitFor);
-        enhancedObject.setSwitchManager(switchManager);
+
         try {
             // NOTE : use the getter function so that CGLIB will intercept it and inject the root element.
             if ( field.isAnnotationPresent( SwitchTo.class )){
@@ -112,7 +113,12 @@ public class GsFieldDecorator implements FieldDecorator {
         if ( GsSeleniumComponent.class.isAssignableFrom( field.getType() )  && field.isAnnotationPresent( FindBy.class )) {
             final GsSeleniumComponent enhancedObject =  (GsSeleniumComponent) getEnhancedObject( field.getType(), getElementHandler( field ) );
 
-            initializeElement( field, enhancedObject );
+            enhancedObject.setWaitFor(waitFor);
+            enhancedObject.setSwitchManager(switchManager);
+
+            if ( !field.isAnnotationPresent(LazyLoad.class) || field.getAnnotation(LazyLoad.class).value() == false ){
+                initializeElement( field, enhancedObject );
+            }
 
             return enhancedObject;
 
@@ -131,7 +137,12 @@ public class GsFieldDecorator implements FieldDecorator {
     }
 
     private ElementLocator getLocator( Field field ) {
-        return new DefaultElementLocatorFactory( searchContext ).createLocator( field );
+        if ( field.isAnnotationPresent(Absolute.class) ){
+            return new DefaultElementLocatorFactory( webDriver ).createLocator( field );
+        }else{
+            return new DefaultElementLocatorFactory( searchContext ).createLocator( field );
+        }
+
     }
 
     public GsFieldDecorator setWaitFor(WaitMethods waitFor) {

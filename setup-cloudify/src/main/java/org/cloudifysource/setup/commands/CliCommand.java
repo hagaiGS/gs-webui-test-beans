@@ -92,7 +92,7 @@ public class CliCommand<T> {
                     if ( f.isAnnotationPresent(Flag.class)){
                         commandArgs.add(f.getAnnotation(Flag.class).value());
                         addValue( value, commandArgs );
-                    }else if ( f.isAnnotationPresent(Switch.class)){
+                    }else if ( f.isAnnotationPresent(Switch.class) && Boolean.valueOf(String.valueOf(value)) ){
                         commandArgs.add( f.getAnnotation(Switch.class).value() );
                     }else if ( f.isAnnotationPresent(Argument.class)){
                         addValue(value, commandArgs);
@@ -189,6 +189,50 @@ public class CliCommand<T> {
         @Argument
         public String applicationFile;
 
+        public void setCloudConfiguration(String cloudConfiguration) {
+            this.cloudConfiguration = cloudConfiguration;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setDisableSelfHealing(Boolean disableSelfHealing) {
+            this.disableSelfHealing = disableSelfHealing;
+        }
+
+        public void setOverrides(String overrides) {
+            this.overrides = overrides;
+        }
+
+        public void setAuthGroups(String authGroups) {
+            this.authGroups = authGroups;
+        }
+
+        public void setTimeout(String timeout) {
+            this.timeout = timeout;
+        }
+
+        public void setDebugMode(String debugMode) {
+            this.debugMode = debugMode;
+        }
+
+        public void setCloudOverrides(String cloudOverrides) {
+            this.cloudOverrides = cloudOverrides;
+        }
+
+        public void setDebugEvents(String debugEvents) {
+            this.debugEvents = debugEvents;
+        }
+
+        public void setDebugAll(Boolean debugAll) {
+            this.debugAll = debugAll;
+        }
+
+        public void setApplicationFile(String applicationFile) {
+            this.applicationFile = applicationFile;
+        }
+
     }
 
 
@@ -203,7 +247,7 @@ public class CliCommand<T> {
         public String zone = null;
 
         @Switch("-disableSelfHealing")
-        public String disableSelfHealing = null;
+        public Boolean disableSelfHealing = false;
 
         @Flag("-debug-mode ")
         public String debugMode = null;
@@ -276,6 +320,49 @@ public class CliCommand<T> {
         public void setCloudDetails(CloudDetails cloudDetails) {
             this.cloudDetails = cloudDetails;
         }
+
+        @Switch("-secured")
+        public Boolean secured = false;
+
+        @Flag("-security-file")
+        public String securityFile = null;
+
+        @Flag("-user")
+        public String user = null;
+
+        @Flag("-password")
+        public String password = null;
+
+        @Flag("-keystore")
+        public String keystore = null;
+
+        @Flag("-keystore-password")
+        public String keystorePassword = null;
+
+        public void setKeystorePassword(String keystorePassword) {
+            this.keystorePassword = keystorePassword;
+        }
+
+        public void setKeystore(String keystore) {
+            this.keystore = keystore;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public void setUser(String user) {
+            this.user = user;
+        }
+
+        public void setSecurityFile(String securityFile) {
+            this.securityFile = securityFile;
+        }
+
+        public void setSecured(Boolean secured) {
+            this.secured = secured;
+        }
+
     }
 
     public static class Teardown extends CliCommand<Teardown>{
