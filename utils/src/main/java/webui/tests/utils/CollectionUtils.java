@@ -1,5 +1,7 @@
 package webui.tests.utils;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -12,6 +14,10 @@ public class CollectionUtils extends org.apache.commons.collections.CollectionUt
 
     public static <T> T first( Collection<T> c ){
         return (T) c.iterator().next();
+    }
+
+    public static <T> T first (T[] ts){
+        return ts[0];
     }
 
     public static interface Predicate<T> {
@@ -27,13 +33,19 @@ public class CollectionUtils extends org.apache.commons.collections.CollectionUt
         return null;
     }
 
+    public static <T> boolean isEmpty( T[] items ){
+        return ArrayUtils.isEmpty(items);
+    }
+
     public static interface Action<T> {
         void apply(T item);
     }
 
     public static <T> void each(List<T> list, Action<T> action) {
-        for (T item : list) {
-            action.apply(item);
+        if (!CollectionUtils.isEmpty(list)) {
+            for (T item : list) {
+                action.apply(item);
+            }
         }
     }
 

@@ -10,7 +10,6 @@
         <version>1.7.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>webui.tests</groupId>
     <artifactId>utils</artifactId>
     <version>1.7.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
@@ -20,6 +19,16 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

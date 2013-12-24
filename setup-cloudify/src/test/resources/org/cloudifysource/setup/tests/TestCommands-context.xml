@@ -3,15 +3,45 @@
        xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 
+
+
+    <bean name="buildProperties" class="org.cloudifysource.setup.BuildProperties">
+        <property name="buildArtifact" value="/export/tarzan/builds/GigaSpacesBuilds/cloudify/2.7.0/cloudify.latest.zip"/>
+        <property name="localBuildArtifactCopy" value="/home/guym/dev_env/cloudify-builds/automated/cloudify.latest.zip"/>
+        <property name="outputFolder" value="/home/guym/dev_env/cloudify-builds/automated/cloudify"/>
+    </bean>
+
     <bean class="org.cloudifysource.setup.commands.CloudifyCliManager"/>
 
-    <bean class="webui.tests.exec.ExecutorFactory"/>
+
+    <bean class="webui.tests.exec.ExecutorFactory" name="executorFactory"/>
 
     <bean id="cloudifyTestBean" class="org.cloudifysource.setup.manager.CloudifyTestBeanImpl">
     </bean>
     
     <bean class="org.cloudifysource.setup.commands.CliCommand$Bootstrap">
-        
+
+    </bean>
+
+    <bean id="setupManager" class="webui.tests.setup.configuration.managers.SetupActionsManager$TestNg">
+        <property name="beforeTest">
+            <list>
+                <!--<bean class="webui.tests.setup.actions.SetupActions$DeleteFolder">-->
+                    <!--<property name="folder" value="/home/guym/dev_env/cloudify-builds/automated/cloudify"/>-->
+                <!--</bean>-->
+                <!--<bean class="webui.tests.setup.actions.SetupActions$CopyFile">-->
+                    <!--<property name="from" value="#{buildProperties.buildArtifact}"/>-->
+                    <!--<property name="to" value="#{buildProperties.localBuildArtifactCopy}"/>-->
+                <!--</bean>-->
+                <bean class="webui.tests.setup.actions.SetupActions$Unzip">
+                    <property name="archive" value="#{buildProperties.localBuildArtifactCopy}"/>
+                    <property name="outputDir" value="#{buildProperties.outputFolder}"/>
+                </bean>
+                <bean name="cliFileResolver" class="org.cloudifysource.setup.Actions$ResolveCliFile">
+                    <property name="root" value="#{buildProperties.outputFolder}"/>
+                </bean>
+            </list>
+        </property>
     </bean>
 
     <bean class="org.cloudifysource.setup.manager.CloudDetails">

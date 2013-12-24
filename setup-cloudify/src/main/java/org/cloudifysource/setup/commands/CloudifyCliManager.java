@@ -4,6 +4,7 @@ import org.apache.commons.collections.Closure;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.cloudifysource.setup.BuildProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,8 @@ public class CloudifyCliManager {
 
 
     // guy - todo - we can inject this value from the installer directly.
-    String cliHomedir = System.getProperty( "JSHOMEDIR", System.getenv( "JSHOMEDIR" ) ) + File.separator + "tools" + File.separator + "cli";
+    @Autowired
+    private BuildProperties buildProperties;
 
     long defaultTimeoutMillis = 120000; // 2 minutes
 
@@ -53,19 +55,28 @@ public class CloudifyCliManager {
         return execute( group.getCommandLineArgs(), timeout );
     }
 
+
+
     public Execution execute( CliCommand ... command ){
         return execute( defaultTimeoutMillis, command );
     }
 
+
+
     public Execution execute( String[] command , long timeout ) {
 
-        File executable = new File(cliHomedir, "cloudify" + (SystemUtils.IS_OS_WINDOWS ? ".bat" : ".sh"));
 
-        if ( !executable.exists() ){
-            throw new RuntimeException( String.format("clihomedir not found [%s]", executable)  );
+        if ( buildProperties == null || buildProperties.cliFile == null){
+            throw new RuntimeException("exectuable is null. please specify where to find cloudify.sh/cloudify.bat scripts");
         }
 
-        CommandLine cmdLine = new CommandLine(executable);
+        File executableFile = buildProperties.cliFile;
+
+        if ( !executableFile.exists() ){
+            throw new RuntimeException( String.format("clihomedir not found [%s]", executableFile)  );
+        }
+
+        CommandLine cmdLine = new CommandLine(executableFile);
         cmdLine.addArguments( command, false );
 
 //        CommandLine cmdLine = new CommandLine( "echo hello" );
@@ -101,6 +112,13 @@ public class CloudifyCliManager {
         return null; // new Execution().setStreamHandler( streamHandler );
     }
 
+    public BuildProperties getBuildProperties() {
+        return buildProperties;
+    }
+
+    public void setBuildProperties(BuildProperties buildProperties) {
+        this.buildProperties = buildProperties;
+    }
 
     public static class Execution {
            private MyStreamHandler streamHandler;

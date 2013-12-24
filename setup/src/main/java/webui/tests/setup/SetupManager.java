@@ -6,6 +6,6 @@ package webui.tests.setup;
  * Date: 8/11/13
  * Time: 6:55 AM
  */
-public interface SetupMain{
+public interface SetupManager {
     public void setup();
 }

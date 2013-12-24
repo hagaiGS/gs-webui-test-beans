@@ -1,5 +1,7 @@
 package webui.tests.setup.actions;
 
+import webui.tests.utils.CollectionUtils;
+
 /**
  * Created with IntelliJ IDEA.
  * User: guym
@@ -11,4 +13,11 @@ package webui.tests.setup.actions;
 public interface SetupAction {
 
     public void invoke();
+
+    public static class InvokeAction implements CollectionUtils.Action<SetupAction> {
+        @Override
+        public void apply(SetupAction item) {
+            item.invoke();
+        }
+    }
 }

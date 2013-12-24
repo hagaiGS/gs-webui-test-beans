@@ -9,10 +9,10 @@
     <bean id="main" class="webui.tests.setup.Main">
         <property name="setupActions">
             <list>
-                <bean class="webui.tests.setup.actions.CheckoutFromSvn">
+                <bean class="webui.tests.setup.actions.CheckoutFromSvnAction">
                     <property name="configurationPopulator" ref="configurationPopulator"/>
                     <property name="conf">
-                        <bean class="webui.tests.setup.actions.CheckoutFromSvn$CheckoutConfiguration">
+                        <bean class="webui.tests.setup.actions.CheckoutFromSvnAction$CheckoutConfiguration">
                             <property name="outputDir" value="test/testConfiguration"/>
                             <property name="svnUrl" value="http://blogger-reference-gadget.googlecode.com/svn/trunk/"/>
                         </bean>
