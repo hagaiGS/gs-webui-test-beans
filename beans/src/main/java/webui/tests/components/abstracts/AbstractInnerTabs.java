@@ -3,8 +3,7 @@ package webui.tests.components.abstracts;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.stereotype.Component;
-import webui.tests.annotations.FirstDisplayed;
-import webui.tests.annotations.OnLoad;
+import webui.tests.annotations.LazyLoad;
 
 import java.util.List;
 
@@ -19,12 +18,11 @@ import java.util.List;
 public abstract class AbstractInnerTabs<T> extends AbstractComponent<AbstractInnerTabs> {
 
     // all tab headers
-    @OnLoad
+    @LazyLoad
     @FindBy(css = ".gs-inner-tabs-toggler")
     private List<WebElement> headers;
 
-    // the currently displayed tab item
-    @FirstDisplayed
+    @LazyLoad
     @FindBy(css = ".gs-tab-item")
     private WebElement activeTab;
 
