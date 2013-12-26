@@ -10,6 +10,7 @@ import org.openqa.selenium.support.pagefactory.FieldDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webui.tests.SeleniumSwitchManager;
+import webui.tests.annotations.FirstDisplayed;
 import webui.tests.annotations.NoEnhancement;
 import webui.tests.annotations.SwitchTo;
 import webui.tests.utils.CollectionUtils;
@@ -72,6 +73,10 @@ public class GsLocators {
 
         public WebElement getSwitchTo(){
             return locateElement();
+        }
+
+        private boolean isFirstDisplayed(){
+            return field.isAnnotationPresent(FirstDisplayed.class);
         }
 
 
