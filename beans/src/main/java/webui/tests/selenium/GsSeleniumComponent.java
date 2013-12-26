@@ -1,7 +1,10 @@
 package webui.tests.selenium;
 
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import webui.tests.SeleniumSwitchManager;
+import webui.tests.components.conditions.WaitMethods;
 
 /**
  * User: guym
@@ -11,10 +14,20 @@ import org.openqa.selenium.WebElement;
  * An interface to represent a Selenium component
  *
  */
-public interface GsSeleniumComponent {
+public interface GsSeleniumComponent<T extends GsSeleniumComponent> {
 
-    public void setWebElement(WebElement webElement);
+    public T setWebElement(WebElement webElement);
 
-    public void setWebDriver( WebDriver webDriver );
+    public T setWebDriver( WebDriver webDriver );
+
+    public T setSwitchManager( SeleniumSwitchManager switchManager );
+
+    public WebElement getRootElement();
+
+    public T setWaitFor( WaitMethods waitFor );
+
+    public T load( SearchContext searchContext );
+
+    public boolean isLoaded();
 
 }

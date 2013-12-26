@@ -1,0 +1,24 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+
+    <import resource="classpath:configurationPopulator-context.xml"/>
+
+    <bean id="main" class="webui.tests.setup.Main">
+        <property name="setupActions">
+            <list>
+                <bean class="webui.tests.setup.actions.CheckoutFromSvn">
+                    <property name="conf">
+                        <bean class="webui.tests.setup.actions.CheckoutFromSvn$CheckoutConfiguration">
+                            <property name="outputDir" value="target/myOutputDir"/>
+                            <property name="svnUrl" value="http://blogger-reference-gadget.googlecode.com/svn/trunk"/>
+                        </bean>
+                    </property>
+                    <property name="configurationPopulator" ref="configurationPopulator"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+</beans>
