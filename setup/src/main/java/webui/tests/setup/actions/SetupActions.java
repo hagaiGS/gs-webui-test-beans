@@ -25,30 +25,40 @@ public abstract class SetupActions extends AbstractSetupAction {
 
     private static Logger logger = LoggerFactory.getLogger(SetupActions.class);
 
-    public static class DeleteFolder extends SetupActions{
-        public String folder;
+    public static class CleanFolders extends SetupActions{
+        public String archivesDirectory;
+        public String extractedArchiveFolder;
         @Override
         public void invoke() {
             logger.info(toString());
+//        	File archiveFile = new File( calculateArchiveFilePath( folder, archive ) );
+//        	archiveFile.delete();            
             try {
-                FileUtils.deleteDirectory(new File(folder));
-            } catch (IOException e) {
-                throw new RuntimeException(String.format("unable to delete [%s]", folder),e);
+                FileUtils.cleanDirectory(new File(archivesDirectory));
+            } catch (Exception e) {
+                throw new RuntimeException(String.format("unable to delete [%s]", archivesDirectory),e);
+            }
+            try {
+                FileUtils.cleanDirectory(new File(extractedArchiveFolder));
+            } catch (Exception e) {
+                throw new RuntimeException(String.format("unable to delete [%s]", extractedArchiveFolder),e);
             }
         }
 
-        public String getFolder() {
-            return folder;
-        }
 
-        public void setFolder(String folder) {
-            this.folder = folder;
+        public void setArchivesDirectory(String archivesDirectory) {
+            this.archivesDirectory = archivesDirectory;
+        }
+        
+        public void setExtractedArchiveFolder(String extractedArchiveFolder) {
+            this.extractedArchiveFolder = extractedArchiveFolder;
         }
 
         @Override
         public String toString() {
-            return "DeleteFolder{" +
-                    "folder='" + folder + '\'' +
+            return "CleanFolder{" +
+                    "archivesDirectory='" + archivesDirectory + '\'' +
+                    ", extractedArchiveFolder='" + extractedArchiveFolder + '\'' +
                     '}';
         }
     }
@@ -57,12 +67,13 @@ public abstract class SetupActions extends AbstractSetupAction {
 
         public String from;
         public String to;
+        public String archive;
 
         @Override
         public void invoke() {
             logger.info(toString());
             try {
-                FileUtils.copyFile(new File(from), new File(to));
+                FileUtils.copyFileToDirectory(new File(calculateArchiveFilePath( from, archive )), new File(to));
             } catch (Exception e) {
                 throw new RuntimeException(String.format("unable to invoke copy file action [%s]", toString()), e);
             }
@@ -83,6 +94,10 @@ public abstract class SetupActions extends AbstractSetupAction {
         public void setTo(String to) {
             this.to = to;
         }
+        
+        public void setArchive(String archive) {
+            this.archive = archive;
+        }          
 
         @Override
         public String toString() {
@@ -136,8 +151,9 @@ public abstract class SetupActions extends AbstractSetupAction {
 
     public static class Unzip extends SetupActions{
 
-        public File archive;
+        public String archivesDirectory;
         public File outputDir;
+        public String archive;
 
         private static Logger logger = LoggerFactory.getLogger(Unzip.class);
 
@@ -145,22 +161,27 @@ public abstract class SetupActions extends AbstractSetupAction {
         public void invoke() {
             logger.info(toString());
             try {
-                ZipFile zipfile = new ZipFile(archive);
+                ZipFile zipfile = new ZipFile( calculateArchiveFilePath( archivesDirectory, archive ) );
                 for (Enumeration e = zipfile.entries(); e.hasMoreElements(); ) {
                     ZipEntry entry = (ZipEntry) e.nextElement();
-                    unzipEntry(zipfile, entry);
+                    String name = entry.getName();
+                   	unzipEntry(zipfile, entry);
                 }
             } catch (Exception e) {
-                throw new RuntimeException(String.format("unable to unzip [%s]", archive),e);
+                throw new RuntimeException(String.format("unable to unzip [%s]", archivesDirectory),e);
             }
         }
 
-        public File getArchive() {
-            return archive;
-        }
+//        public File getArchivesDirectory() {
+//            return archivesDirectory;
+//        }
 
-        public void setArchive(File archive) {
-            this.archive = archive;
+        public String getArchive() {
+            return archive;
+        }        
+        
+        public void setArchivesDirectory(String archivesDirectory) {
+            this.archivesDirectory = archivesDirectory;
         }
 
         public File getOutputDir() {
@@ -171,7 +192,9 @@ public abstract class SetupActions extends AbstractSetupAction {
             this.outputDir = outputDir;
         }
 
-
+        public void setArchive(String archive) {
+            this.archive = archive;
+        }   
 
         private void unzipEntry(ZipFile zipfile, ZipEntry entry) throws IOException {
 
@@ -211,5 +234,17 @@ public abstract class SetupActions extends AbstractSetupAction {
                     ", outputDir=" + outputDir +
                     '}';
         }
+    }
+    
+    private static String calculateArchiveFilePath( String archivesFolder, String archive ){
+    	String path;
+    	if( !archivesFolder.endsWith( File.separator ) ){
+    		path = archivesFolder + File.separator;
+    	}
+    	else{
+    		path = archivesFolder;
+    	}
+    	path += archive;
+    	return path;
     }
 }
