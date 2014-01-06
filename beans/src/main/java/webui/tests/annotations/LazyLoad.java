@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( { ElementType.FIELD,ElementType.METHOD} )
-public @interface OnLoad {
+public @interface LazyLoad {
     // applies to list of web elements - whether to wait for only first visible or not
-    boolean first() default false;
+    boolean value() default true;
 }

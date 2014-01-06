@@ -8,7 +8,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webui.tests.annotations.OnLoad;
+import webui.tests.annotations.LazyLoad;
 import webui.tests.components.abstracts.AbstractComponent;
 import webui.tests.components.conditions.SizeCondition;
 import webui.tests.utils.CollectionUtils;
@@ -27,7 +27,7 @@ public class ComboBox extends AbstractComponent<ComboBox> {
     @FindBy(tagName = "input")
     private WebElement active;
 
-    @OnLoad
+    @LazyLoad
     @FindBy( css = ".icon")
     private WebElement dropDownButton;
 
