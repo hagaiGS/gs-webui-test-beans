@@ -31,8 +31,6 @@ public abstract class SetupActions extends AbstractSetupAction {
         @Override
         public void invoke() {
             logger.info(toString());
-//        	File archiveFile = new File( calculateArchiveFilePath( folder, archive ) );
-//        	archiveFile.delete();            
             try {
                 FileUtils.cleanDirectory(new File(archivesDirectory));
             } catch (Exception e) {
@@ -199,10 +197,6 @@ public abstract class SetupActions extends AbstractSetupAction {
                 throw new RuntimeException(String.format("unable to unzip [%s]", archivesDirectory),e);
             }
         }
-
-//        public File getArchivesDirectory() {
-//            return archivesDirectory;
-//        }
 
         public String getArchive() {
             return archive;
