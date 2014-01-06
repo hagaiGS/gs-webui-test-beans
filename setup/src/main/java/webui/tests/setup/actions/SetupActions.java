@@ -143,6 +143,14 @@ public abstract class SetupActions extends AbstractSetupAction {
             this.commandLineArgs = commandLineArgs;
         }
 
+        public void setWorkingDirectory(File workingDirectory) {
+            this.workingDirectory = workingDirectory;
+        }
+
+        public void setExecutable(String executable) {
+            this.executable = executable;
+        }
+
         @Override
         public String toString() {
             return "ExecuteCommandAction{" +
