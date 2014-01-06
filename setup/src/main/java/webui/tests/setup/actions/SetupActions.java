@@ -3,7 +3,6 @@ package webui.tests.setup.actions;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -115,19 +115,34 @@ public abstract class SetupActions extends AbstractSetupAction {
 
         public File workingDirectory;
 
-        public String command;
+        public String executable;
+
+        public String[] commandLineArgs = new String[0];
 
         @Override
         public void invoke() {
             logger.info(toString());
+            CommandLine parse = null;
+
+            Executor executor = executorFactory.createNew();
             try{
-                Executor executor = executorFactory.createNew();
+
                 executor.setWorkingDirectory(workingDirectory);
-                CommandLine parse = CommandLine.parse(command);
+                parse = new CommandLine(executable);
+
+                if ( commandLineArgs.length > 0 ){
+                    parse = new CommandLine(executable);
+                    parse.addArguments(commandLineArgs, false); // might be true
+                }
+            }catch(RuntimeException e){
+                logger.error("unable to parse command [{}] , [{}]", executable, commandLineArgs);
+                throw e;
+            }
+            try{
                 logger.info("executing [{}]", parse);
                 executor.execute(parse);
             }catch(Exception e){
-                throw new RuntimeException( String.format("unable to execute command [%s]", command ),e);
+                throw new RuntimeException( String.format("unable to execute command [%s]", parse ),e);
             }
         }
 
@@ -139,11 +154,24 @@ public abstract class SetupActions extends AbstractSetupAction {
             this.executorFactory = executorFactory;
         }
 
+        public void setCommandLineArgs(String[] commandLineArgs) {
+            this.commandLineArgs = commandLineArgs;
+        }
+
+        public void setWorkingDirectory(File workingDirectory) {
+            this.workingDirectory = workingDirectory;
+        }
+
+        public void setExecutable(String executable) {
+            this.executable = executable;
+        }
+
         @Override
         public String toString() {
             return "ExecuteCommandAction{" +
                     "workingDirectory=" + workingDirectory +
-                    ", command='" + command + '\'' +
+                    ", executable='" + executable + '\'' +
+                    ", args='" + Arrays.toString(commandLineArgs) + '\'' +
                     '}';
         }
     }
