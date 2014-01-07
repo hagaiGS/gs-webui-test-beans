@@ -7,15 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import webui.tests.exec.ExecutorFactory;
+import webui.tests.utils.CollectionUtils;
 import webui.tests.utils.FileUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -100,7 +104,8 @@ public abstract class SetupActions extends AbstractSetupAction {
         @Override
         public String toString() {
             return "CopyFile{" +
-                    "from='" + from + '\'' +
+            		"archive='" + archive + '\'' +
+                    ", from='" + from + '\'' +
                     ", to='" + to + '\'' +
                     '}';
         }
@@ -125,13 +130,34 @@ public abstract class SetupActions extends AbstractSetupAction {
             Executor executor = executorFactory.createNew();
             try{
 
+            	workingDirectory = locateBinDirectory();
+            	
+            	//tODO use assert
+//            	Assert
+            	
                 executor.setWorkingDirectory(workingDirectory);
-                parse = new CommandLine(executable);
-
-                if ( commandLineArgs.length > 0 ){
-                    parse = new CommandLine(executable);
-                    parse.addArguments(commandLineArgs, false); // might be true
+        		// need to use the call command to intercept the cloudify batch file return code.
+                List<String> cmdArgs = new ArrayList<String>( commandLineArgs.length + 4 );
+            	if( isWindows() ) {
+            		cmdArgs.add( "cmd" );
+            		cmdArgs.add( "/c" );
+            		cmdArgs.add( "call" );
+            	}
+        		
+            	cmdArgs.add( executable );
+        		
+        		for( String arg : commandLineArgs ){
+        			cmdArgs.add( arg );
+        		}
+            	
+                parse = new CommandLine( cmdArgs.get( 0 ) );
+                int argsCount =  cmdArgs.size();
+                
+                if ( argsCount > 1 ){
+                	//add rest of arguments to CommandLine
+                	parse.addArguments( cmdArgs.subList( 1, argsCount ).toArray( new String[ argsCount -1 ] ), false );
                 }
+                
             }catch(RuntimeException e){
                 logger.error("unable to parse command [{}] , [{}]", executable, commandLineArgs);
                 throw e;
@@ -144,7 +170,28 @@ public abstract class SetupActions extends AbstractSetupAction {
             }
         }
 
-        public ExecutorFactory getExecutorFactory() {
+        private File locateBinDirectory() {
+        	
+            File[] files = workingDirectory.listFiles();
+            File cloudifyRoot;
+            File cloudifyBin = null;
+            if (CollectionUtils.size(files) == 1 && CollectionUtils.first(files).getName().startsWith("gigaspaces-cloudify-")){ // we need to go down more
+                cloudifyRoot = CollectionUtils.first(files);
+                File[] binFolders = cloudifyRoot.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return "bin".equals(name);
+                    }
+                });
+                if( !CollectionUtils.isEmpty( binFolders ) ){
+                	cloudifyBin = binFolders[ 0 ] ;
+                }
+                 
+            }        	
+			return cloudifyBin;
+		}
+
+		public ExecutorFactory getExecutorFactory() {
             return executorFactory;
         }
 
@@ -182,6 +229,7 @@ public abstract class SetupActions extends AbstractSetupAction {
         public String archive;
 
         private static Logger logger = LoggerFactory.getLogger(Unzip.class);
+		private File extractedArchive;
 
         @Override
         public void invoke() {
@@ -218,6 +266,10 @@ public abstract class SetupActions extends AbstractSetupAction {
             this.archive = archive;
         }   
 
+        public File getExtractedArchive(){
+        	return extractedArchive;
+        }
+        
         private void unzipEntry(ZipFile zipfile, ZipEntry entry) throws IOException {
 
 
@@ -232,8 +284,13 @@ public abstract class SetupActions extends AbstractSetupAction {
                     logger.info("could no set executable for [{}]", outputFile);
                 }
             }
-            FileUtils.forceMkdir(outputFile.getParentFile());
-
+            
+            File parentFile = outputFile.getParentFile();
+            FileUtils.forceMkdir( parentFile );
+            if( extractedArchive == null ){
+            	extractedArchive = parentFile; 
+            	logger.info("Extracted to [{}]", extractedArchive.getAbsolutePath() );
+            }
 
             logger.trace("Extracting: " + entry);
             BufferedInputStream inputStream = new BufferedInputStream(zipfile.getInputStream(entry));
@@ -269,4 +326,8 @@ public abstract class SetupActions extends AbstractSetupAction {
     	path += archive;
     	return path;
     }
+    
+	public static boolean isWindows() {
+		return System.getProperty("os.name").toLowerCase().startsWith("win");
+	}    
 }
