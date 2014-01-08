@@ -39,7 +39,6 @@ public class Actions {
                 File[] files = root.listFiles();
                 if (CollectionUtils.size(files) == 1 && CollectionUtils.first(files).getName().startsWith("gigaspaces-cloudify-")){ // we need to go down more
                     cloudifyRoot = CollectionUtils.first(files);
-
                 }
 
                 logger.info("looking for tools folder");

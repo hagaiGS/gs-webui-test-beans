@@ -1,5 +1,7 @@
 package org.cloudifysource.setup;
 
+import webui.tests.setup.actions.SetupActions;
+
 import java.io.File;
 
 /**
@@ -7,7 +9,7 @@ import java.io.File;
  * Date: 11/28/13
  * Time: 3:13 PM
  */
-public class BuildProperties {
+public class BuildProperties implements SetupActions.ExecuteCommandAction.ExecFileGetter{
 
     public String buildArtifact;
     public String localBuildArtifactCopy;
@@ -44,5 +46,10 @@ public class BuildProperties {
 
     public void setLocalBuildArtifactCopy(String localBuildArtifactCopy) {
         this.localBuildArtifactCopy = localBuildArtifactCopy;
+    }
+
+    @Override
+    public File getExecutableFile() {
+        return cliFile;
     }
 }

@@ -141,6 +141,10 @@ public class CliCommand<T> {
             }
             return args.toArray( new String[args.size() ]);
         }
+
+        public void setCommands(List<CliCommand> commands) {
+            this.commands = commands;
+        }
     }
 
     public static class WildCommand extends CliCommand<WildCommand>{
@@ -189,6 +193,49 @@ public class CliCommand<T> {
         @Argument
         public String applicationFile;
 
+        public void setCloudConfiguration(String cloudConfiguration) {
+            this.cloudConfiguration = cloudConfiguration;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setDisableSelfHealing(Boolean disableSelfHealing) {
+            this.disableSelfHealing = disableSelfHealing;
+        }
+
+        public void setOverrides(String overrides) {
+            this.overrides = overrides;
+        }
+
+        public void setAuthGroups(String authGroups) {
+            this.authGroups = authGroups;
+        }
+
+        public void setTimeout(String timeout) {
+            this.timeout = timeout;
+        }
+
+        public void setDebugMode(String debugMode) {
+            this.debugMode = debugMode;
+        }
+
+        public void setCloudOverrides(String cloudOverrides) {
+            this.cloudOverrides = cloudOverrides;
+        }
+
+        public void setDebugEvents(String debugEvents) {
+            this.debugEvents = debugEvents;
+        }
+
+        public void setDebugAll(Boolean debugAll) {
+            this.debugAll = debugAll;
+        }
+
+        public void setApplicationFile(String applicationFile) {
+            this.applicationFile = applicationFile;
+        }
     }
 
 
@@ -280,13 +327,17 @@ public class CliCommand<T> {
 
     public static class Teardown extends CliCommand<Teardown>{
 
-        CloudDetails cloudDetails;
+        @Autowired
+        private CloudDetails cloudDetails;
 
         @Override
         public String getCommand() {
-            return cloudDetails.isLocal() ? "bootstrap-localcloud" : "bootstrap-cloud";
+            return cloudDetails.isLocal() ? "teardown-localcloud" : "teardown-cloud";
         }
 
+        public void setCloudDetails(CloudDetails cloudDetails) {
+            this.cloudDetails = cloudDetails;
+        }
     }
 
     @Command("invoke")
@@ -332,7 +383,21 @@ public class CliCommand<T> {
         @Argument
         public String url;
 
+        public void setUser(String user) {
+            this.user = user;
+        }
 
+        public void setSsl(String ssl) {
+            this.ssl = ssl;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
     }
 
 }

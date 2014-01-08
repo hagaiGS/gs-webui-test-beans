@@ -3,6 +3,7 @@ package webui.tests.setup.actions;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -113,42 +111,40 @@ public abstract class SetupActions extends AbstractSetupAction {
 
     public static class ExecuteCommandAction extends SetupActions{
 
-         @Autowired
         public ExecutorFactory executorFactory;
 
         public File workingDirectory;
 
         public String executable;
 
-        public String[] commandLineArgs = new String[0];
+        public ExecFileGetter execFileGetter;
 
+        public String[] commandLineArgs = new String[0];
+        
         @Override
         public void invoke() {
             logger.info(toString());
             CommandLine parse = null;
-
             Executor executor = executorFactory.createNew();
             try{
-
-            	workingDirectory = locateBinDirectory();
-            	
+            	workingDirectory = locateBinDirectory();            	
             	//tODO use assert
 //            	Assert
             	
                 executor.setWorkingDirectory(workingDirectory);
         		// need to use the call command to intercept the cloudify batch file return code.
-                List<String> cmdArgs = new ArrayList<String>( commandLineArgs.length + 4 );
+                List<String> cmdArgs = new ArrayList<String>();
+                
             	if( isWindows() ) {
             		cmdArgs.add( "cmd" );
             		cmdArgs.add( "/c" );
             		cmdArgs.add( "call" );
             	}
         		
-            	cmdArgs.add( executable );
-        		
-        		for( String arg : commandLineArgs ){
-        			cmdArgs.add( arg );
-        		}
+           		cmdArgs.add( getExecFile() );
+
+                // check if possible to replace with "Collection.addAll"
+                Collections.addAll( cmdArgs, commandLineArgs );
             	
                 parse = new CommandLine( cmdArgs.get( 0 ) );
                 int argsCount =  cmdArgs.size();
@@ -159,7 +155,7 @@ public abstract class SetupActions extends AbstractSetupAction {
                 }
                 
             }catch(RuntimeException e){
-                logger.error("unable to parse command [{}] , [{}]", executable, commandLineArgs);
+                logger.error("unable to parse command [{}]", commandLineArgs);
                 throw e;
             }
             try{
@@ -170,7 +166,7 @@ public abstract class SetupActions extends AbstractSetupAction {
             }
         }
 
-        private File locateBinDirectory() {
+               private File locateBinDirectory() {
         	
             File[] files = workingDirectory.listFiles();
             File cloudifyRoot;
@@ -191,6 +187,16 @@ public abstract class SetupActions extends AbstractSetupAction {
 			return cloudifyBin;
 		}
 
+
+        private String getExecFile(){
+            if (StringUtils.isNotEmpty(executable) ){
+                return executable;
+            }else if ( execFileGetter != null ){
+                return execFileGetter.getExecutableFile().getAbsolutePath();
+            }
+            throw new RuntimeException("no exec file defined!!!");
+        }
+
 		public ExecutorFactory getExecutorFactory() {
             return executorFactory;
         }
@@ -207,15 +213,21 @@ public abstract class SetupActions extends AbstractSetupAction {
             this.workingDirectory = workingDirectory;
         }
 
-        public void setExecutable(String executable) {
-            this.executable = executable;
+        public void setExecFileGetter(ExecFileGetter execFileGetter) {
+            this.execFileGetter = execFileGetter;
         }
+
+        public static interface ExecFileGetter{
+            public File getExecutableFile();
+        }
+        
+
 
         @Override
         public String toString() {
             return "ExecuteCommandAction{" +
                     "workingDirectory=" + workingDirectory +
-                    ", executable='" + executable + '\'' +
+                    ", getExecFile=" + getExecFile() +
                     ", args='" + Arrays.toString(commandLineArgs) + '\'' +
                     '}';
         }
