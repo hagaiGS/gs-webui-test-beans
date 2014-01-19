@@ -47,6 +47,13 @@ public class GsFieldDecorator implements FieldDecorator {
         defaultFieldDecorator = new DefaultFieldDecorator( new DefaultElementLocatorFactory( searchContext ) );
     }
 
+    public Object getEnhancedWebElement(Class clzz, MethodInterceptor methodInterceptor){
+        Enhancer e = new Enhancer();
+        e.setSuperclass(clzz);
+        e.setCallback(methodInterceptor);
+        return e.create();
+    }
+
 
     public Object getEnhancedObject( Class clzz, MethodInterceptor methodInterceptor  ){
         Enhancer e = new Enhancer();
@@ -128,14 +135,23 @@ public class GsFieldDecorator implements FieldDecorator {
 
             return enhancedObject;
 
-        }else{
-            return defaultFieldDecorator.decorate( loader, field );
+        }else if ( WebElement.class.isAssignableFrom( field.getType() ) ){
+            Object enhancedWebElement = getEnhancedWebElement(field.getType(), getWebElementHandler(field));
+
+            //initialize??
+
+            return enhancedWebElement;
         }
+        return defaultFieldDecorator.decorate(loader, field);
     }
 
     public GsFieldDecorator setSwitchManager(SeleniumSwitchManager switchManager) {
         this.switchManager = switchManager;
         return this;
+    }
+
+    public WebElementHandler getWebElementHandler( Field field ){
+        return new WebElementHandler( field, getLocator(field), webDriver );
     }
 
     private GsLocators.ElementHandler getElementHandler( Field field ) {
