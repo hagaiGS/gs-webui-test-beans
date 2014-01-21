@@ -29,6 +29,22 @@ If you are not in a GIT project or you cannot add a submodule, you can simply
 make sure the files are available under `src/test/resources/selenium-drivers`  
 This path is configurable. 
 
+If you did choose the submodule way, this is how you clone the submodule
+
+You can clone the repository with the submodules using
+
+```
+   git clone --recursive git_repository_url
+```
+
+or if you already cloned the repositry simply do
+
+```
+   git submodule init
+   git submodule update
+````
+
+
 #### Test example without Spring 
 We recommend using Spring to run your webui.tests.
 We will show below how neat things are with Spring.  
