@@ -273,7 +273,7 @@ public class SeleniumDriverFactory{
         public static class Windows extends DefaultValues{
             @Override
             public String getChromeDriverPath() {
-                return "file:src/test/resources/selenium-drivers/chromedriver_win_26.0.1383.0/chromedriver.exe";
+                return "file:src/test/resources/selenium-drivers/chromedriver_2.8.exe";
             }
         }
         public static class Linux extends DefaultValues{
