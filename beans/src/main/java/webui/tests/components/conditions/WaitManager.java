@@ -1,6 +1,10 @@
 package webui.tests.components.conditions;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -96,6 +101,46 @@ public class WaitManager implements WaitMethods<WaitManager>{
                 return null;
             }
         });
+        return this;
+    }
+
+    @Override
+    public WaitManager hidden(  SearchContext searchContext, By... findBys) {
+        hidden(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS, searchContext, findBys);
+        return this;
+    }
+
+    /**
+     * Guy - not using ExpectedCondition.invisibility - because it assumes the WebDriver is the search context, which is a wrong assumption.
+     * @param timeout
+     * @param unit
+     * @param searchContext
+     * @param findBys
+     * @return
+     */
+    @Override
+    public WaitManager hidden(long timeout, TimeUnit unit, final SearchContext searchContext, final By... findBys) {
+        try {
+            stopWatch.start(TOTAL_WAIT + "_" + hashCode());
+            for (By by : findBys) {
+                final By finalBy = by;
+                predicate(timeout, unit, new ExpectedCondition<Boolean>() {
+                    @Override
+                    public Boolean apply(WebDriver input) {
+                        try{
+                            return searchContext.findElement( finalBy ).isDisplayed();
+                        }catch(NoSuchElementException e ){
+                            return true;
+                        }catch(StaleElementReferenceException e){
+                            return true;
+                        }
+                    }
+                });
+            }
+
+        } finally {
+            stopWatch.stop(TOTAL_WAIT + "_" + hashCode());
+        }
         return this;
     }
 
