@@ -24,10 +24,10 @@ public abstract class AbstractSetupAction implements SetupAction {
     @PostConstruct
     public void overrideConfiguration() {
         if (configurationPopulator != null) {
-            logger.info("applying environment variables");
+            logger.info("applying environment variables, class [{}]", getClass().getName() );
             configurationPopulator.populate(this);
         }else{
-            logger.info("configuration populator does not exist. values from environment will not be applied");
+            logger.info("configuration populator does not exist. values from environment will not be applied, class [{}]", getClass().getName() );
         }
     }
 

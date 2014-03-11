@@ -106,7 +106,7 @@ public class SeleniumDriverFactory{
 
                 } catch ( Exception e )
                 {
-                    logger.warn( "unable to initialize chrome [{}]", e.getMessage() );
+                    logger.warn("unable to initialize chrome [{}]", e.getMessage());
                 }
                 break;
             }
@@ -271,15 +271,17 @@ public class SeleniumDriverFactory{
         // In IDEs, we need to use classpath, however in command line we can use "file:".
         // You can tell the IDE to use a different work folder as a work around.
         public static class Windows extends DefaultValues{
+            private String path = "file:src/test/resources/selenium-drivers/chromedriver_2.8.exe";
             @Override
             public String getChromeDriverPath() {
-                return "file:src/test/resources/selenium-drivers/chromedriver_win_26.0.1383.0/chromedriver.exe";
+                return path;
             }
         }
         public static class Linux extends DefaultValues{
+            private String path = "file:src/test/resources/selenium-drivers/chromedriver_linux64_2.1/chromedriver";
             @Override
             public String getChromeDriverPath() {
-                return "file:src/test/resources/selenium-drivers/chromedriver_linux64_2.1/chromedriver";
+                return path;
             }
         }
     }
