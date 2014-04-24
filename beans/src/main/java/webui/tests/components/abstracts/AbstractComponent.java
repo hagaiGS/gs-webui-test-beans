@@ -63,6 +63,16 @@ public abstract class  AbstractComponent<T extends AbstractComponent> implements
         return (T) this;
     }
 
+    // GUY _ this is a hack until we get this into the test beans framework
+    @NoEnhancement
+    public <T > T load( T component, SearchContext searchContext) {
+        logger.info("loading");
+        PageFactory.initElements(new GsFieldDecorator(searchContext, webDriver).setSwitchManager(switchManager).setWaitFor(waitFor), component);
+
+        return (T) this;
+    }
+
+
     @NoEnhancement
     public T load(SearchContext searchContext) {
         logger.info("loading");
