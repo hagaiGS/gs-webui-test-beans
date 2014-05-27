@@ -280,7 +280,7 @@ public class SeleniumDriverFactory{
             }
         }
         public static class Linux extends DefaultValues{
-            private String path = "file:src/test/resources/selenium-drivers/chromedriver_linux64_2.1/chromedriver";
+            private String path = "file:src/test/resources/selenium-drivers/chrome/2.10/linux64/chromedriver";
             @Override
             public String getChromeDriverPath() {
                 return path;
