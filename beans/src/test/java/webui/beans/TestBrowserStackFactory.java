@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.Test;
 import webui.tests.SeleniumDriverFactory;
+import webui.tests.SeleniumScreenshotTaker;
 import webui.tests.remoteclient.RemoteClientFactory;
 
 /**
@@ -23,6 +24,8 @@ public class TestBrowserStackFactory extends AbstractTestNGSpringContextTests {
     SeleniumDriverFactory factory;
 
 
+    @Autowired
+    SeleniumScreenshotTaker screenshotTaker;
 
     @Test
 
@@ -31,6 +34,7 @@ public class TestBrowserStackFactory extends AbstractTestNGSpringContextTests {
         driver.get("http://www.google.com");
         String text = driver.findElement(By.cssSelector("#hplogo")).getText();
         System.out.println("text = " + text);
+        screenshotTaker.takeScreenshot();
     }
 
     @Test
@@ -51,5 +55,13 @@ public class TestBrowserStackFactory extends AbstractTestNGSpringContextTests {
 
     public void setFactory(SeleniumDriverFactory factory) {
         this.factory = factory;
+    }
+
+    public SeleniumScreenshotTaker getScreenshotTaker() {
+        return screenshotTaker;
+    }
+
+    public void setScreenshotTaker(SeleniumScreenshotTaker screenshotTaker) {
+        this.screenshotTaker = screenshotTaker;
     }
 }
