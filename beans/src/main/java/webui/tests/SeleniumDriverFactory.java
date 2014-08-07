@@ -291,6 +291,8 @@ public class SeleniumDriverFactory{
                 res = new Linux();
             } else if ( SystemUtils.IS_OS_WINDOWS ) {
                 res = new Windows();
+            } else if ( SystemUtils.IS_OS_MAC_OSX ) {
+                res = new Mac();
             }
             if (res != null) {
                 logger.info("Using default values for OS [{}]", res.getClass().getSimpleName());
@@ -311,7 +313,14 @@ public class SeleniumDriverFactory{
             }
         }
         public static class Linux extends DefaultValues{
-            private String path = "file:src/test/resources/selenium-drivers/chromedriver_linux64_2.1/chromedriver";
+            private String path = "file:src/test/resources/selenium-drivers/chrome/2.10/linux64/chromedriver";
+            @Override
+            public String getChromeDriverPath() {
+                return path;
+            }
+        }
+        public static class Mac extends DefaultValues{
+            private String path = "file:src/test/resources/selenium-drivers/chrome_driver_2_9_mac32";
             @Override
             public String getChromeDriverPath() {
                 return path;
