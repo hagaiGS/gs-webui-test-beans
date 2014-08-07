@@ -15,6 +15,8 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
+import webui.tests.browserstack.BrowserstackDriverFactory;
+import webui.tests.remoteclient.RemoteClientFactory;
 import webui.tests.selenium.GsHtmlUnitDriver;
 
 import java.io.File;
@@ -38,7 +40,10 @@ public class SeleniumDriverFactory{
     private String gwtChromeDevCrx = "file:src/test/resources/selenium-drivers/chrome_gwt_1_0_11357.crx";
 
     public static enum DriverType {
-        CHROME, FIREFOX, IE, FIREFOX_GWT_DEV, CHROME_GWT_DEV, SAFARI, HTMLUNIT;
+        CHROME, FIREFOX, IE,
+        FIREFOX_GWT_DEV, CHROME_GWT_DEV, SAFARI,
+        HTMLUNIT, BROWSERSTACK,
+        REMOTE
         // SAFARI_GWT_DEV // need a mac to run this one
     }
 
@@ -48,10 +53,23 @@ public class SeleniumDriverFactory{
 
     private Selenium selenium = null;
 
+    private BrowserstackDriverFactory browserstackDriver = null;
+
+    private RemoteClientFactory clientFactory = null;
+
     private String rootUrl = "http://localhost:8099";
 
 
     private ChromeDriverService chromeService = null;
+
+
+    public RemoteClientFactory getClientFactory() {
+        return clientFactory;
+    }
+
+    public void setClientFactory(RemoteClientFactory clientFactory) {
+        this.clientFactory = clientFactory;
+    }
 
     public SeleniumDriverFactory setDriverType( DriverType driverType ) {
         this.driverType = driverType;
@@ -64,85 +82,94 @@ public class SeleniumDriverFactory{
 
     public void initializeDriver() {
          logger.info("this is my location [{}]",new File(".").getAbsolutePath());
-        switch ( driverType )
-        {
-            case SAFARI :
-            {
-                webDriver = new SafariDriver(  );
+        switch ( driverType ) {
+            case SAFARI: {
+                webDriver = new SafariDriver();
                 break;
             }
-            case CHROME_GWT_DEV:
-            {
-                try
-                {
+            case CHROME_GWT_DEV: {
+                try {
                     ChromeOptions options = new ChromeOptions();
-                    logger.info( "using chrome crx [{}] and chrome driver [{}]", gwtChromeDevCrx, chromeDriverPath );
-                    options.addExtensions( getResourceLocation( gwtChromeDevCrx ) );
+                    logger.info("using chrome crx [{}] and chrome driver [{}]", gwtChromeDevCrx, chromeDriverPath);
+                    options.addExtensions(getResourceLocation(gwtChromeDevCrx));
                     DesiredCapabilities desired = DesiredCapabilities.chrome();
-                    desired.setCapability( "chrome.switches", Arrays.asList( "--start-maximized" ) );
-                    desired.setCapability( ChromeOptions.CAPABILITY, options ); // add the gwt dev plugin
+                    desired.setCapability("chrome.switches", Arrays.asList("--start-maximized"));
+                    desired.setCapability(ChromeOptions.CAPABILITY, options); // add the gwt dev plugin
 
-                    chromeService = new ChromeDriverService.Builder().usingAnyFreePort().usingDriverExecutable( getResourceLocation( chromeDriverPath ) ).build();
-                    logger.info( "Starting Chrome Driver Server..." );
+                    chromeService = new ChromeDriverService.Builder().usingAnyFreePort().usingDriverExecutable(getResourceLocation(chromeDriverPath)).build();
+                    logger.info("Starting Chrome Driver Server...");
                     chromeService.start();
-                    webDriver = new RemoteWebDriver( chromeService.getUrl(), desired );
+                    webDriver = new RemoteWebDriver(chromeService.getUrl(), desired);
 
-                } catch ( Exception e )
-                {
-                    logger.warn( "unable to initialize chrome [{}]", e.getMessage() );
-                }
-                break;
-            }
-            case CHROME:
-            {
-                try
-                {
-                    DesiredCapabilities desired = DesiredCapabilities.chrome();
-                    desired.setCapability( "chrome.switches", Arrays.asList( "--start-maximized" ) );
-                    chromeService = new ChromeDriverService.Builder().usingAnyFreePort().usingDriverExecutable( getResourceLocation( chromeDriverPath ) ).build();
-                    logger.info( "Starting Chrome Driver Server..." );
-                    chromeService.start();
-                    webDriver = new RemoteWebDriver( chromeService.getUrl(), desired );
-
-                } catch ( Exception e )
-                {
+                } catch (Exception e) {
                     logger.warn("unable to initialize chrome [{}]", e.getMessage());
                 }
                 break;
             }
-            case FIREFOX_GWT_DEV:
-            {
-                try
-                {
-                    FirefoxProfile profile = new FirefoxProfile();
-                    profile.addExtension( getResourceLocation( gwtFirefoxDevXpi ) );
-                    webDriver = new FirefoxDriver( profile );
+            case CHROME: {
+                try {
+                    DesiredCapabilities desired = DesiredCapabilities.chrome();
+                    desired.setCapability("chrome.switches", Arrays.asList("--start-maximized"));
+                    chromeService = new ChromeDriverService.Builder().usingAnyFreePort().usingDriverExecutable(getResourceLocation(chromeDriverPath)).build();
+                    logger.info("Starting Chrome Driver Server...");
+                    chromeService.start();
+                    webDriver = new RemoteWebDriver(chromeService.getUrl(), desired);
 
-                } catch ( Exception e )
-                {
-                    logger.warn( "unable to initialize FIREFOX_GWT_DEV [{}]", e.getMessage() );
+                } catch (Exception e) {
+                    logger.warn("unable to initialize chrome [{}]", e.getMessage());
                 }
                 break;
             }
-            case FIREFOX:
-            {
+            case FIREFOX_GWT_DEV: {
+                try {
+                    FirefoxProfile profile = new FirefoxProfile();
+                    profile.addExtension(getResourceLocation(gwtFirefoxDevXpi));
+                    webDriver = new FirefoxDriver(profile);
+
+                } catch (Exception e) {
+                    logger.warn("unable to initialize FIREFOX_GWT_DEV [{}]", e.getMessage());
+                }
+                break;
+            }
+            case FIREFOX: {
                 webDriver = new FirefoxDriver();
                 break;
             }
-            case IE:
-            {
-                DesiredCapabilities desired = DesiredCapabilities.internetExplorer();
-                desired.setCapability( InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true );
-                webDriver = new InternetExplorerDriver( desired );
+            case REMOTE: {
+                webDriver = clientFactory.getDriver();
                 break;
             }
-            case HTMLUNIT:
+            case BROWSERSTACK: {
+                if (browserstackDriver == null) {
+                    throw new RuntimeException("need to define browserstack factory bean");
+                }
+
+                try {
+                    webDriver = browserstackDriver.getDriver();
+                } catch (Exception e) {
+                    logger.error("error openning browserstack", e);
+                    throw new RuntimeException("unable to open browserstack driver", e);
+                }
+            }
+            case IE: {
+                DesiredCapabilities desired = DesiredCapabilities.internetExplorer();
+                desired.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+                webDriver = new InternetExplorerDriver(desired);
+                break;
+            }
+            case HTMLUNIT: {
+                webDriver = new GsHtmlUnitDriver();
+                break;
+            }
+            default:
             {
-                webDriver = new GsHtmlUnitDriver( );
+                throw new RuntimeException("type "  + driverType + " is not implemented in factory");
             }
 
         }
     }
+
+
 
     private File getResourceLocation( String uri ) {
         try
@@ -246,7 +273,13 @@ public class SeleniumDriverFactory{
         this.gwtChromeDevCrx = gwtChromeDevCrx;
     }
 
+    public BrowserstackDriverFactory getBrowserstackDriver() {
+        return browserstackDriver;
+    }
 
+    public void setBrowserstackDriver(BrowserstackDriverFactory browserstackDriver) {
+        this.browserstackDriver = browserstackDriver;
+    }
 
     public abstract static class DefaultValues{
 
@@ -285,4 +318,6 @@ public class SeleniumDriverFactory{
             }
         }
     }
+
+
 }
