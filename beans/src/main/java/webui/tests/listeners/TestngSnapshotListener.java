@@ -2,6 +2,7 @@ package webui.tests.listeners;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webui.tests.SeleniumScreenshotTaker;
 import webui.tests.annotations.NoScreenshot;
 
 import javax.imageio.ImageIO;
@@ -23,21 +24,24 @@ public class TestngSnapshotListener extends TestListenerAdapter {
 
     @Override
     public void onTestFailure(ITestResult failure)  {
-//        logger.info( "testFailure : [{}].", failure );
-//            if ( failure.getMethod().getConstructorOrMethod().getMethod().isAnnotationPresent( NoScreenshot.class ) ){
-//                logger.info( "skipping screenshot due to annotation" );
-//            }else{
-//                try{
-//                String filename = failure.getTestName().replaceAll( "\\(", "_" ).replaceAll( "\\)","_" ) + "_" + System.currentTimeMillis() + ".jpg";
-//                logger.info( "saving screenshot to file [{}]", filename );
-//                Robot robot = new Robot();
-//                BufferedImage screenShot = robot.createScreenCapture( new Rectangle( Toolkit.getDefaultToolkit().getScreenSize() ) );
-//                ImageIO.write(screenShot, "JPG", new File(filename));
-//                super.onTestFailure( failure );
-//                }catch(Exception e){
-//                    throw new RuntimeException( String.format("unable to take screenshot"), e );
-//                }
-//            }
+        logger.info( "testFailure : [{}].", failure );
+            if ( failure.getMethod().getConstructorOrMethod().getMethod().isAnnotationPresent( NoScreenshot.class ) ){
+                logger.info( "skipping screenshot due to annotation" );
+            }else{
+                try{
+                String filename = "screenshot" + System.currentTimeMillis() + ".jpg";
+                    try{
+                        filename = failure.getTestName().replaceAll( "\\(", "_" ).replaceAll( "\\)","_" ) + "_" + System.currentTimeMillis() + ".jpg";
+                    }catch(Exception e){
+                        logger.error("unable to give proper name to image", failure );
+                    }
+                logger.info( "saving screenshot to file [{}]", filename );
+                new SeleniumScreenshotTaker().takeScreenshot( filename );
+                super.onTestFailure( failure );
+                }catch(Exception e){
+                    throw new RuntimeException( String.format("unable to take screenshot"), e );
+                }
+            }
     }
 
     @Override

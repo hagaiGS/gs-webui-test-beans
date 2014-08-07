@@ -47,6 +47,11 @@ public class SeleniumDriverFactory{
         // SAFARI_GWT_DEV // need a mac to run this one
     }
 
+    // guy - very very very ugly stupid hack suggested by SO,
+    //     http://stackoverflow.com/a/15325306
+    // wish there was a better way to implement this.... :(
+   public static WebDriver staticWebDriver = null;
+
     private DriverType driverType = DriverType.CHROME;
 
     private WebDriver webDriver = null;
@@ -167,6 +172,7 @@ public class SeleniumDriverFactory{
             }
 
         }
+
     }
 
 
@@ -206,6 +212,7 @@ public class SeleniumDriverFactory{
             throw new RuntimeException();
         }
 
+        staticWebDriver = webDriver;
         selenium = new WebDriverBackedSelenium( webDriver, rootUrl );
         return this;
     }

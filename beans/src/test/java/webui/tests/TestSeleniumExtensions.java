@@ -31,7 +31,7 @@ public class TestSeleniumExtensions extends AbstractTestNGSpringContextTests {
     ExtensionsTestPage testPage;
 
 
-    @Test
+//    @Test
     public void testSelectElement() {
         logger.info("test start");
         testPage.goTo();
@@ -43,7 +43,7 @@ public class TestSeleniumExtensions extends AbstractTestNGSpringContextTests {
         logger.info("test end");
     }
 
-    @Test
+//    @Test
     public void testSwitchTo() {
         testPage.goTo();
 

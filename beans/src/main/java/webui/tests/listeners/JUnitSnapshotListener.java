@@ -4,6 +4,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webui.tests.SeleniumScreenshotTaker;
 import webui.tests.annotations.NoScreenshot;
 
 import javax.imageio.ImageIO;
@@ -28,9 +29,7 @@ public class JUnitSnapshotListener extends RunListener {
         }else{
             String filename = failure.getDescription().getDisplayName().replaceAll( "\\(", "_" ).replaceAll( "\\)","_" ) + "_" + System.currentTimeMillis() + ".jpg";
             logger.info( "saving screenshot to file [{}]", filename );
-            Robot robot = new Robot();
-            BufferedImage screenShot = robot.createScreenCapture( new Rectangle( Toolkit.getDefaultToolkit().getScreenSize() ) );
-            ImageIO.write( screenShot, "JPG", new File( filename ) );
+            new SeleniumScreenshotTaker().takeScreenshot(filename);
             super.testFailure( failure );
         }
     }

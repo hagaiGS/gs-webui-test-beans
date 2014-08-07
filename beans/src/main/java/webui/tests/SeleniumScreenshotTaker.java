@@ -21,14 +21,19 @@ public class SeleniumScreenshotTaker {
 
     private static Logger logger = LoggerFactory.getLogger(SeleniumScreenshotTaker.class);
 
-    private WebDriver driver;
 
 
-    public void takeScreenshot(){
+    public void takeScreenshot( String filename ){
+        // guy - unfortunately, spring and testng are not good friends..
+        // we have to hack the system in order to get a bean driver..
+        // this means this screenshot implementation is assuming driver was created by
+        // selenium driver factory.
+
+        WebDriver driver = SeleniumDriverFactory.staticWebDriver;
         driver = new Augmenter().augment(driver);
         File screenshotAs = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         try {
-            FileUtils.copyFile(screenshotAs, new File(".", screenshotAs.getName()));
+            FileUtils.copyFile(screenshotAs, new File(filename));
         } catch (IOException e) {
             logger.error("unable to take screenshot",e);
         }
@@ -36,11 +41,4 @@ public class SeleniumScreenshotTaker {
 
     }
 
-    public WebDriver getDriver() {
-        return driver;
-    }
-
-    public void setDriver(WebDriver driver) {
-        this.driver = driver;
-    }
 }

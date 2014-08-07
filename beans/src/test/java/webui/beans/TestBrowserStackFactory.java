@@ -24,8 +24,7 @@ public class TestBrowserStackFactory extends AbstractTestNGSpringContextTests {
     SeleniumDriverFactory factory;
 
 
-    @Autowired
-    SeleniumScreenshotTaker screenshotTaker;
+
 
     @Test
 
@@ -34,10 +33,11 @@ public class TestBrowserStackFactory extends AbstractTestNGSpringContextTests {
         driver.get("http://www.google.com");
         String text = driver.findElement(By.cssSelector("#hplogo")).getText();
         System.out.println("text = " + text);
-        screenshotTaker.takeScreenshot();
+        throw new RuntimeException("failing test for test screenshot");
+
     }
 
-    @Test
+//    @Test
     public void testBrowserstack(){
         WebDriver driver = factory.getDriver();
         driver.get("http://www.google.com/ncr");
@@ -57,11 +57,4 @@ public class TestBrowserStackFactory extends AbstractTestNGSpringContextTests {
         this.factory = factory;
     }
 
-    public SeleniumScreenshotTaker getScreenshotTaker() {
-        return screenshotTaker;
-    }
-
-    public void setScreenshotTaker(SeleniumScreenshotTaker screenshotTaker) {
-        this.screenshotTaker = screenshotTaker;
-    }
 }
