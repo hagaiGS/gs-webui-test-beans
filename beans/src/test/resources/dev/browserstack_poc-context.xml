@@ -2,8 +2,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
     <!--<bean id="browserstackFactory" class="webui.tests.browserstack.BrowserstackDriverFactory">-->
-        <!--<property name="username" value="guymograbi1"/>-->
-        <!--<property name="key" value="3qGaaRqy97AyLZZHKQZi"/>-->
+        <!--<property name="username" value="__username__"/>-->
+
+        <!--<property name="key" value="__key__"/>-->
         <!--<property name="browserDetails">-->
             <!--<bean class="webui.tests.browserstack.BrowserDetails">-->
                 <!--<property name="browser" value="CHROME_30"/>-->
