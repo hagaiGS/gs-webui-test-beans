@@ -198,7 +198,7 @@ public class SeleniumDriverFactory{
 
             } catch ( RuntimeException e )
             {
-                logger.warn( "initializeDriver throws runtime exceptions", e.getMessage() );
+                logger.warn( "initializeDriver throws runtime exceptions ::  [{}]", e.getMessage() );
             }
             if ( webDriver != null )
             {
