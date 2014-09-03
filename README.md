@@ -206,7 +206,7 @@ thus making your webui.tests more stable.
 If you want to change the SeleniumDriver bean we declare in our context.xml, you can simply add the following code in your context.xml 
 
 
-```
+```xml
 <bean id="clientFactory" class="webui.tests.remoteclient.RemoteClientFactory">
     <property name="url" value="http://pc-lab58:4444/wd/hub"/>
     <property name="capability">
