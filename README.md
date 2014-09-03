@@ -201,5 +201,30 @@ the first displayed WebElement that matches the selector.
 Using this method, you can build a page that will handle different versions of your website  
 thus making your webui.tests more stable.
 
+###    Override Context Beans Example
 
+If you want to change the SeleniumDriver bean we declare in our context.xml, you can simply add the following code in your context.xml 
+
+
+```
+<bean id="clientFactory" class="webui.tests.remoteclient.RemoteClientFactory">
+    <property name="url" value="http://pc-lab58:4444/wd/hub"/>
+    <property name="capability">
+        <bean class="org.openqa.selenium.remote.DesiredCapabilities">
+            <property name="browserName" value="internet explorer"></property>
+        </bean>
+    </property>
+</bean>
+
+<bean id="driverFactory" class="webui.tests.SeleniumDriverFactory" init-method="init" destroy-method="quit" >
+
+    <property name="driverType" value="REMOTE"/>
+    <property name="clientFactory" ref="clientFactory"/>
+
+    <!--<property name="rootUrl" value="http://www.google.com/"/>-->
+</bean>
+
+<bean id="webDriver" class="org.openqa.selenium.WebDriver" factory-bean="driverFactory" factory-method="getDriver"/>
+
+```
 
