@@ -16,7 +16,7 @@ import java.net.URL;
  * Time: 3:46 PM
  */
 public class RemoteClientFactory {
-    public String url = "http://hagai-pcu:4444/wd/hub";
+    public String url = "http://pc-lab58:4444/wd/hub";
 
     private static Logger logger = LoggerFactory.getLogger(RemoteClientFactory.class);
     DesiredCapabilities capability = null;
