@@ -12,6 +12,10 @@
         <!--<property name="rootUrl" value="http://www.google.com/"/>-->
     </bean>
 
+    <!--Using environment variables to inject the selenium server ip and port-->
+    <bean name="seleniumServerURL" class="java.lang.String">
+        <constructor-arg value="http://#{environment.SELENIUM_SERVER_IP}:#{environment.SELENIUM_SERVER_PORT}/wd/hub" />
+    </bean>
 
     <bean id="webDriver" class="org.openqa.selenium.WebDriver" factory-bean="driverFactory" factory-method="getDriver"/>
     <!-- selenium interface is deprecated, we should use web driver. But just in case web driver does not cover something..-->
@@ -43,6 +47,7 @@
                     <property name="version" value=""/>
                 </bean>
             </property>
+            <property name="url" ref="seleniumServerURL"/>
         </bean>
     </beans>
 
