@@ -24,20 +24,6 @@
     <context:component-scan base-package="webui.tests"/>
     <context:annotation-config/>
 
-
-    <beans profile="firefox">
-        <bean id="clientFactory" class="webui.tests.remoteclient.RemoteClientFactory">
-            <property name="capability">
-                <bean class="org.openqa.selenium.remote.DesiredCapabilities">
-                    <property name="browserName" value="firefox"/>
-                    <property name="platform" value="ANY"/>
-                    <property name="version" value=""/>
-                </bean>
-            </property>
-        </bean>
-    </beans>
-
-
     <beans profile="chrome,default">
         <bean id="clientFactory" class="webui.tests.remoteclient.RemoteClientFactory">
             <property name="capability">
@@ -48,6 +34,18 @@
                 </bean>
             </property>
             <property name="url" ref="seleniumServerURL"/>
+        </bean>
+    </beans>
+
+    <beans profile="firefox">
+        <bean id="clientFactory" class="webui.tests.remoteclient.RemoteClientFactory">
+            <property name="capability">
+                <bean class="org.openqa.selenium.remote.DesiredCapabilities">
+                    <property name="browserName" value="firefox"/>
+                    <property name="platform" value="ANY"/>
+                    <property name="version" value=""/>
+                </bean>
+            </property>
         </bean>
     </beans>
 
